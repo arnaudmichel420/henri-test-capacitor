@@ -17,6 +17,7 @@
     "@phosphor-icons/react": "^2.1.10",
     "@react-router/node": "7.15.1",
     "@react-router/serve": "7.15.1",
+    "@tanstack/react-form": "^1.33.3",
     "@workspace/ui": "workspace:*",
     "isbot": "^5",
     "react": "^19.2.6",
