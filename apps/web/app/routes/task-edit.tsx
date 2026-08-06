@@ -1,17 +1,28 @@
 import BaseForm from "@/components/form-base"
-import { ImagePickerField, TextField } from "@/components/form-fields"
+import {
+  DateTimePickerField,
+  ImagePickerField,
+  TextField,
+} from "@/components/form-fields"
 import { CaretLeftIcon } from "@phosphor-icons/react"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "@workspace/ui/components/button"
 import { FieldGroup } from "@workspace/ui/components/field"
 import { useMemo } from "react"
 import { Link, useNavigate, useParams } from "react-router"
-import { taskSchema, taskStore, type Task } from "../../store/useTaskStore"
+import { z } from "zod"
+import {
+  taskStore,
+  taskUpdateSchema,
+  type Task,
+} from "../../store/useTaskStore"
+import { Toast } from "@capacitor/toast"
 
-function getDefaultValues(task: Task): Task {
+function getDefaultValues(task: Task): z.infer<typeof taskUpdateSchema> {
   return {
     name: task.name ?? "",
     image: task?.image,
+    date: task?.date ?? new Date(),
   }
 }
 
@@ -22,21 +33,22 @@ export default function TaskEdit() {
   const navigate = useNavigate()
 
   const task = useMemo(
-    () => tasks.find((_, index) => index === Number(id)) as Task,
+    () => tasks.find((task) => task.id === id) as Task,
     [id, tasks]
   )
 
   const form = useForm({
     defaultValues: getDefaultValues(task),
     validators: {
-      onSubmit: taskSchema,
+      onSubmit: taskUpdateSchema,
     },
     onSubmit: async ({ value }) => {
       setTasks([
-        ...tasks.filter((_, index) => index !== Number(id)),
-        { name: value.name, image: value.image },
+        ...tasks.filter((task) => task.id !== id),
+        { id: task.id, name: value.name, image: value.image, date: value.date },
       ])
       form.reset()
+      await Toast.show({ text: "Tâche modifier avec succès" })
       navigate(`/task/${id}`)
     },
   })
@@ -57,6 +69,9 @@ export default function TaskEdit() {
               </form.Field>
               <form.Field name="image">
                 {(field) => <ImagePickerField field={field} label="Image" />}
+              </form.Field>
+              <form.Field name="date">
+                {(field) => <DateTimePickerField field={field} label="Date" />}
               </form.Field>
             </FieldGroup>
             <Button type="submit" className="self-center">

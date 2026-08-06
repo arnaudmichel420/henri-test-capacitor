@@ -1,6 +1,7 @@
 import type { MediaResult } from "@capacitor/camera"
 import type { AnyFieldApi } from "@tanstack/react-form"
 
+import { DateTimePicker } from "@/components/date-time-picker-field"
 import { takePicture } from "@/native/camera"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
@@ -202,10 +203,46 @@ function ImagePickerField({ field, label, required }: ImagePickerFieldProps) {
   )
 }
 
+type DateTimePickerFieldProps = {
+  field: AnyFieldApi
+  label: string
+  required?: boolean
+}
+
+function DateTimePickerField({
+  field,
+  label,
+  required,
+}: DateTimePickerFieldProps) {
+  const errors = fieldErrors(field)
+
+  return (
+    <Field data-invalid={!!errors?.length || undefined}>
+      <FieldLabel htmlFor={field.name}>
+        {label}
+        <RequiredMark required={required} />
+      </FieldLabel>
+      <DateTimePicker
+        id={field.name}
+        name={field.name}
+        required={required}
+        value={field.state.value}
+        onChange={field.handleChange}
+        onBlur={field.handleBlur}
+        invalid={!!errors?.length}
+      />
+      <FieldError errors={errors} />
+    </Field>
+  )
+}
+
 export {
+  fieldErrors,
+  RequiredMark,
   TextField,
   TextareaField,
   CheckboxField,
   SwitchField,
   ImagePickerField,
+  DateTimePickerField,
 }
