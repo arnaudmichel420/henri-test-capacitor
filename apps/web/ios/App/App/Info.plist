@@ -24,6 +24,12 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Cette application utilise l'appareil photo pour prendre des photos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Cette application enregistre des photos dans votre bibliothèque.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Cette application accède à votre bibliothèque de photos.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -5,7 +5,8 @@ const config: CapacitorConfig = {
   appName: 'henri-v4-capacitor',
   webDir: 'build/client',
   server:{
-    url: "http://192.168.5.33:8100"
+    url: "http://192.168.5.33:8100",
+    cleartext: true
   }
 };
 

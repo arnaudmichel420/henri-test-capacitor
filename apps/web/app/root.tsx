@@ -9,6 +9,7 @@ import {
 
 import type { Route } from "./+types/root"
 import "@workspace/ui/globals.css"
+import { defineCustomElements } from "@ionic/pwa-elements/loader"
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -32,6 +33,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  // Call the element loader before the render call
+  defineCustomElements(window)
   return (
     <div className="safe-area-padding">
       <Outlet />

@@ -1,28 +1,31 @@
 import BaseForm from "@/components/form-base"
 import { TextField } from "@/components/form-fields"
+import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "@workspace/ui/components/button"
 import { FieldGroup } from "@workspace/ui/components/field"
-import { useState } from "react"
-import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react"
+import { Link } from "react-router"
+import { taskCreateSchema, taskStore } from "../../store/useTaskStore"
 
 export default function Home() {
-  const [taskList, setTaskList] = useState<string[]>([])
+  const tasks = taskStore((state) => state.tasks)
+  const setTasks = taskStore((state) => state.setTasks)
 
   const form = useForm({
     defaultValues: {
       name: "",
     },
+    validators: {
+      onSubmit: taskCreateSchema,
+    },
     onSubmit: async ({ value }) => {
-      if (value.name?.trim() === "")
-        return alert("Vous devez renseigner une valeur")
-      setTaskList((prev) => [...prev, value.name])
+      setTasks([...tasks, { name: value.name }])
       form.reset()
     },
   })
 
   function removeTask(taskId: number): void {
-    setTaskList((prev) => prev.filter((_, index) => index !== taskId))
+    setTasks(tasks.filter((_, index) => index !== taskId))
   }
 
   return (
@@ -41,13 +44,15 @@ export default function Home() {
         </FieldGroup>
       </BaseForm>
       <div className="flex flex-col gap-2">
-        {taskList.length > 0
-          ? taskList.map((task, index) => (
+        {tasks.length > 0
+          ? tasks.map((task, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between gap-2 not-last:border-b pb-2"
+                className="flex items-center justify-between gap-2 pb-2 not-last:border-b"
               >
-                {task}
+                <Link to={"/task/" + index} className="w-full">
+                  {task.name}
+                </Link>
                 <TrashIcon
                   size={24}
                   color="var(--destructive)"

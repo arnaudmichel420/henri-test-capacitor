@@ -1,14 +1,14 @@
+import type { MediaResult } from "@capacitor/camera"
 import type { AnyFieldApi } from "@tanstack/react-form"
 
+import { takePicture } from "@/native/camera"
+import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
-import {
-  Field,
-  FieldError,
-  FieldLabel,
-} from "@workspace/ui/components/field"
+import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
 import { Switch } from "@workspace/ui/components/switch"
 import { Textarea } from "@workspace/ui/components/textarea"
+import { photoActions } from "@/native/photoAction"
 
 function fieldErrors(field: AnyFieldApi) {
   if (!field.state.meta.isTouched) return undefined
@@ -108,7 +108,10 @@ function CheckboxField({
 }: CheckboxFieldProps) {
   const errors = fieldErrors(field)
   return (
-    <Field orientation="horizontal" data-invalid={!!errors?.length || undefined}>
+    <Field
+      orientation="horizontal"
+      data-invalid={!!errors?.length || undefined}
+    >
       <Checkbox
         id={field.name}
         name={field.name}
@@ -140,7 +143,10 @@ type SwitchFieldProps = Omit<
 function SwitchField({ field, label, required, ...props }: SwitchFieldProps) {
   const errors = fieldErrors(field)
   return (
-    <Field orientation="horizontal" data-invalid={!!errors?.length || undefined}>
+    <Field
+      orientation="horizontal"
+      data-invalid={!!errors?.length || undefined}
+    >
       <Switch
         id={field.name}
         name={field.name}
@@ -160,4 +166,46 @@ function SwitchField({ field, label, required, ...props }: SwitchFieldProps) {
   )
 }
 
-export { TextField, TextareaField, CheckboxField, SwitchField }
+type ImagePickerFieldProps = {
+  field: AnyFieldApi
+  label: string
+  required?: boolean
+}
+
+function ImagePickerField({ field, label, required }: ImagePickerFieldProps) {
+  const errors = fieldErrors(field)
+  const image = field.state.value as string
+
+  const handlePick = async () => {
+    const picture = await photoActions()
+    if (!picture) return
+    field.handleChange(picture)
+  }
+
+  return (
+    <Field data-invalid={!!errors?.length || undefined}>
+      <FieldLabel htmlFor={field.name}>
+        {label}
+        <RequiredMark required={required} />
+      </FieldLabel>
+      <Button
+        type="button"
+        id={field.name}
+        variant="outline"
+        onClick={handlePick}
+      >
+        {image ? "Reprendre la photo" : "Prendre une photo"}
+      </Button>
+      {image && <img src={image} alt="" className="max-h-40 rounded" />}
+      <FieldError errors={errors} />
+    </Field>
+  )
+}
+
+export {
+  TextField,
+  TextareaField,
+  CheckboxField,
+  SwitchField,
+  ImagePickerField,
+}
