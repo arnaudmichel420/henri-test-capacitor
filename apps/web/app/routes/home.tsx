@@ -1,13 +1,13 @@
 import BaseForm from "@/components/form-base"
 import { TextField } from "@/components/form-fields"
+import { Toast } from "@capacitor/toast"
 import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "@workspace/ui/components/button"
 import { FieldGroup } from "@workspace/ui/components/field"
 import { Link } from "react-router"
-import { taskCreateSchema, taskStore } from "../../store/useTaskStore"
 import { v7 as uuidv7 } from "uuid"
-import { Toast } from "@capacitor/toast"
+import { taskCreateSchema, taskStore } from "../../store/useTaskStore"
 export default function Home() {
   const tasks = taskStore((state) => state.tasks)
   const setTasks = taskStore((state) => state.setTasks)
@@ -26,7 +26,7 @@ export default function Home() {
       form.reset()
     },
   })
-  
+
   async function removeTask(taskId: string): Promise<void> {
     setTasks(tasks.filter((task) => task.id !== taskId))
     await Toast.show({ text: "Tâche supprimée avec succès" })

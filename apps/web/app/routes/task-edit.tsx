@@ -2,6 +2,7 @@ import BaseForm from "@/components/form-base"
 import {
   DateTimePickerField,
   ImagePickerField,
+  PositionPickerField,
   TextField,
 } from "@/components/form-fields"
 import { CaretLeftIcon } from "@phosphor-icons/react"
@@ -20,9 +21,10 @@ import { Toast } from "@capacitor/toast"
 
 function getDefaultValues(task: Task): z.infer<typeof taskUpdateSchema> {
   return {
-    name: task.name ?? "",
+    name: task?.name ?? "",
     image: task?.image,
-    date: task?.date ?? new Date(),
+    date: task?.date,
+    position: task?.position,
   }
 }
 
@@ -36,16 +38,23 @@ export default function TaskEdit() {
     () => tasks.find((task) => task.id === id) as Task,
     [id, tasks]
   )
+  const defaultValues = useMemo(() => getDefaultValues(task), [task])
 
   const form = useForm({
-    defaultValues: getDefaultValues(task),
+    defaultValues: defaultValues,
     validators: {
       onSubmit: taskUpdateSchema,
     },
     onSubmit: async ({ value }) => {
       setTasks([
         ...tasks.filter((task) => task.id !== id),
-        { id: task.id, name: value.name, image: value.image, date: value.date },
+        {
+          id: task.id,
+          name: value.name,
+          image: value.image,
+          date: value.date,
+          position: value.position,
+        },
       ])
       form.reset()
       await Toast.show({ text: "Tâche modifier avec succès" })
@@ -72,6 +81,11 @@ export default function TaskEdit() {
               </form.Field>
               <form.Field name="date">
                 {(field) => <DateTimePickerField field={field} label="Date" />}
+              </form.Field>
+              <form.Field name="position">
+                {(field) => (
+                  <PositionPickerField field={field} label="Position" />
+                )}
               </form.Field>
             </FieldGroup>
             <Button type="submit" className="self-center">

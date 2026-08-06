@@ -30,6 +30,10 @@
 	<string>Cette application enregistre des photos dans votre bibliothèque.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Cette application accède à votre bibliothèque de photos.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Cette application a besoin d'accéder à votre position pour vous proposer des services basés sur votre localisation actuelle.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Cette application a besoin d'accéder à votre position, y compris en arrière-plan, afin de continuer à vous fournir des services de localisation même lorsque l'application n'est pas active.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -1,15 +1,14 @@
-import type { MediaResult } from "@capacitor/camera"
 import type { AnyFieldApi } from "@tanstack/react-form"
 
 import { DateTimePicker } from "@/components/date-time-picker-field"
-import { takePicture } from "@/native/camera"
+import { photoActions } from "@/native/photoAction"
+import { Geolocation } from "@capacitor/geolocation"
 import { Button } from "@workspace/ui/components/button"
 import { Checkbox } from "@workspace/ui/components/checkbox"
 import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
 import { Switch } from "@workspace/ui/components/switch"
 import { Textarea } from "@workspace/ui/components/textarea"
-import { photoActions } from "@/native/photoAction"
 
 function fieldErrors(field: AnyFieldApi) {
   if (!field.state.meta.isTouched) return undefined
@@ -236,13 +235,59 @@ function DateTimePickerField({
   )
 }
 
+type PositionPickerFieldProps = {
+  field: AnyFieldApi
+  label: string
+  required?: boolean
+}
+
+function PositionPickerField({
+  field,
+  label,
+  required,
+}: PositionPickerFieldProps) {
+  const errors = fieldErrors(field)
+
+  async function getPosition(permission: boolean): Promise<void> {
+    if (permission) {
+      const position = await Geolocation.getCurrentPosition()
+      field.handleChange(position)
+    } else {
+      field.handleChange(undefined)
+    }
+  }
+
+  return (
+    <Field
+      orientation="horizontal"
+      data-invalid={!!errors?.length || undefined}
+    >
+      <Switch
+        id={field.name}
+        name={field.name}
+        required={required}
+        checked={field.state.value}
+        onCheckedChange={(checked) => getPosition(checked)}
+        onBlur={field.handleBlur}
+        aria-invalid={!!errors?.length}
+      />
+      <FieldLabel htmlFor={field.name}>
+        {label}
+        <RequiredMark required={required} />
+      </FieldLabel>
+      <FieldError errors={errors} />
+    </Field>
+  )
+}
+
 export {
-  fieldErrors,
-  RequiredMark,
-  TextField,
-  TextareaField,
   CheckboxField,
-  SwitchField,
-  ImagePickerField,
   DateTimePickerField,
+  fieldErrors,
+  ImagePickerField,
+  RequiredMark,
+  SwitchField,
+  TextareaField,
+  TextField,
+  PositionPickerField,
 }

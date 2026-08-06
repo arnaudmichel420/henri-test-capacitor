@@ -44,11 +44,13 @@ function DateTimePicker({
   id,
   name,
   required,
-  value,
+  value: rawValue,
   onChange,
   onBlur,
   invalid,
 }: DateTimePickerProps) {
+  const value = rawValue ? new Date(rawValue) : undefined
+
   const handleDateSelect = (selected: Date | undefined) => {
     if (!selected) return onChange(undefined)
     let next: Date = selected
@@ -72,6 +74,7 @@ function DateTimePicker({
   return (
     <Popover>
       <PopoverTrigger
+        nativeButton={false}
         render={
           <Input
             id={id}
