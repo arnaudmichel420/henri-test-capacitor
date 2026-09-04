@@ -9,6 +9,7 @@ import { Field, FieldError, FieldLabel } from "@workspace/ui/components/field"
 import { Input } from "@workspace/ui/components/input"
 import { Switch } from "@workspace/ui/components/switch"
 import { Textarea } from "@workspace/ui/components/textarea"
+import { Capacitor } from "@capacitor/core"
 
 function fieldErrors(field: AnyFieldApi) {
   if (!field.state.meta.isTouched) return undefined
@@ -175,6 +176,7 @@ type ImagePickerFieldProps = {
 function ImagePickerField({ field, label, required }: ImagePickerFieldProps) {
   const errors = fieldErrors(field)
   const image = field.state.value as string
+  console.log(image)
 
   const handlePick = async () => {
     const picture = await photoActions()
@@ -196,7 +198,13 @@ function ImagePickerField({ field, label, required }: ImagePickerFieldProps) {
       >
         {image ? "Reprendre la photo" : "Prendre une photo"}
       </Button>
-      {image && <img src={image} alt="" className="max-h-40 rounded" />}
+      {image && (
+        <img
+          src={Capacitor.convertFileSrc(image)}
+          alt=""
+          className="max-h-40 rounded"
+        />
+      )}
       <FieldError errors={errors} />
     </Field>
   )

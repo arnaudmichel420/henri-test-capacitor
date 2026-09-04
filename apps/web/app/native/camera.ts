@@ -9,9 +9,10 @@ export const takePicture = async () => {
       quality: 90,
       includeMetadata: true,
       editable: "in-app",
+      correctOrientation: true,
     })
 
-    return `data:image/${result?.metadata?.format};base64,${result?.thumbnail}`
+    return result?.uri
   } catch (e) {
     const error = e as any
     // error.code contains the structured error code (e.g. 'OS-PLUG-CAMR-0003')

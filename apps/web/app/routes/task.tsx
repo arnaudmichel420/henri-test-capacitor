@@ -1,4 +1,5 @@
 import { getTask, type TaskDoc } from "@/db/queries/taskQuery"
+import { Capacitor } from "@capacitor/core"
 import { CaretLeftIcon, PencilIcon } from "@phosphor-icons/react"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { format } from "date-fns"
@@ -11,7 +12,10 @@ export default function Task() {
 
   useEffect(() => {
     if (!id) return
-    getTask(id).then((task) => setTask(task))
+    getTask(id).then((task) => {
+      if (!task) return
+      setTask(task)
+    })
   }, [])
 
   if (!task)
@@ -41,7 +45,11 @@ export default function Task() {
             </div>
           )}
           {task.image && (
-            <img src={task.image} alt="" className="w-full object-contain" />
+            <img
+              src={Capacitor.convertFileSrc(task.image)}
+              alt=""
+              className="w-full object-contain"
+            />
           )}
           {/* {task.position && (
             <Map

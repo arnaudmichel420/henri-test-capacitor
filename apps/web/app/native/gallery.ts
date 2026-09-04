@@ -11,7 +11,7 @@ export async function pickMedia() {
     })
     const result = results[0]
 
-    return `data:image/${result?.metadata?.format};base64,${result?.thumbnail}`
+    return result?.uri
   } catch (e) {
     const error = e as any
     const message = error.code

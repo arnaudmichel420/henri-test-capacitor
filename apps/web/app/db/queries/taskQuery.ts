@@ -3,6 +3,8 @@ import { getDatabase } from "../database"
 import type { Task } from "../../../store/useTaskStore"
 import type { RxDocument } from "rxdb"
 import type { Observable } from "rxjs"
+import { Directory, Filesystem } from "@capacitor/filesystem"
+import { Capacitor } from "@capacitor/core"
 
 export type TaskDoc = Omit<Task, "date"> & { date?: string }
 
@@ -15,7 +17,7 @@ export async function createTask({ name, image, date }: Omit<TaskDoc, "id">) {
     date,
   })
 }
-export async function getTask(id: string): Promise<RxDocument<TaskDoc | null>> {
+export async function getTask(id: string): Promise<RxDocument<TaskDoc> | null> {
   const db = await getDatabase()
   return await db.task.findOne(id).exec()
 }
@@ -31,5 +33,19 @@ export async function updateTask({ id, name, image, date }: TaskDoc) {
 
 export async function deleteTask(id: string) {
   const document = await getTask(id)
+
+  if (!document) return
+
+  await deleteFile(document?.image)
   await document?.remove()
+}
+
+export async function deleteFile(path: string | undefined) {
+  if (!path) return
+
+  try {
+    await Filesystem.deleteFile({
+      path: path,
+    })
+  } catch (error) {}
 }
