@@ -2,42 +2,39 @@ import BaseForm from "@/components/form-base"
 import {
   DateTimePickerField,
   ImagePickerField,
-  PositionPickerField,
   TextField,
 } from "@/components/form-fields"
+import { getTask, updateTask, type TaskDoc } from "@/db/queries/taskQuery"
+import { Toast } from "@capacitor/toast"
 import { CaretLeftIcon } from "@phosphor-icons/react"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "@workspace/ui/components/button"
 import { FieldGroup } from "@workspace/ui/components/field"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router"
 import { z } from "zod"
-import {
-  taskStore,
-  taskUpdateSchema,
-  type Task,
-} from "../../store/useTaskStore"
-import { Toast } from "@capacitor/toast"
+import { taskUpdateSchema, type Task } from "../../store/useTaskStore"
 
-function getDefaultValues(task: Task): z.infer<typeof taskUpdateSchema> {
+function getDefaultValues(
+  task: TaskDoc | undefined
+): z.input<typeof taskUpdateSchema> {
   return {
     name: task?.name ?? "",
     image: task?.image,
-    date: task?.date,
-    position: task?.position,
+    date: task?.date ? new Date(task.date) : undefined,
   }
 }
 
 export default function TaskEdit() {
   const { id } = useParams()
-  const tasks = taskStore((state) => state.tasks)
-  const setTasks = taskStore((state) => state.setTasks)
   const navigate = useNavigate()
+  const [task, setTask] = useState<TaskDoc>()
 
-  const task = useMemo(
-    () => tasks.find((task) => task.id === id) as Task,
-    [id, tasks]
-  )
+  useEffect(() => {
+    if (!id) return
+    getTask(id).then((task) => setTask(task))
+  }, [])
+
   const defaultValues = useMemo(() => getDefaultValues(task), [task])
 
   const form = useForm({
@@ -46,16 +43,15 @@ export default function TaskEdit() {
       onSubmit: taskUpdateSchema,
     },
     onSubmit: async ({ value }) => {
-      setTasks([
-        ...tasks.filter((task) => task.id !== id),
-        {
-          id: task.id,
-          name: value.name,
-          image: value.image,
-          date: value.date,
-          position: value.position,
-        },
-      ])
+      if (!id) return
+      const parsedValue = taskUpdateSchema.parse(value)
+
+      await updateTask({
+        id,
+        name: parsedValue.name,
+        date: parsedValue.date,
+        image: parsedValue.image,
+      })
       form.reset()
       await Toast.show({ text: "Tâche modifier avec succès" })
       navigate(`/task/${id}`)
@@ -82,11 +78,11 @@ export default function TaskEdit() {
               <form.Field name="date">
                 {(field) => <DateTimePickerField field={field} label="Date" />}
               </form.Field>
-              <form.Field name="position">
+              {/* <form.Field name="position">
                 {(field) => (
                   <PositionPickerField field={field} label="Position" />
                 )}
-              </form.Field>
+              </form.Field> */}
             </FieldGroup>
             <Button type="submit" className="self-center">
               Modifier la tache

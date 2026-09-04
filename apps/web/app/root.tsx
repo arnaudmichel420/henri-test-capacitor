@@ -10,6 +10,8 @@ import {
 import type { Route } from "./+types/root"
 import "@workspace/ui/globals.css"
 import { defineCustomElements } from "@ionic/pwa-elements/loader"
+import { useEffect, useState } from "react"
+import { getDatabase } from "./db/database"
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -35,6 +37,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   // Call the element loader before the render call
   defineCustomElements(window)
+
+  const [database, setDatabase] = useState()
+
+  useEffect(() => {
+    const initDb = async () => {
+      const db = await getDatabase()
+      setDatabase(db)
+      console.log(db);
+      
+    }
+    initDb()
+  }, [])
+
+  if (database == null) {
+    return null
+  }
+
   return (
     <div className="safe-area-padding">
       <Outlet />
