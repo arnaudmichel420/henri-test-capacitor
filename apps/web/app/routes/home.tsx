@@ -1,6 +1,11 @@
 import BaseForm from "@/components/form-base"
 import { TextField } from "@/components/form-fields"
-import { createTask, deleteTask, getTasks } from "@/db/queries/taskQuery"
+import {
+  createTask,
+  deleteTask,
+  getTasks,
+  type TaskDoc,
+} from "@/db/queries/taskQuery"
 import { Toast } from "@capacitor/toast"
 import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react"
 import { useForm } from "@tanstack/react-form"
@@ -12,11 +17,12 @@ import type { Subscription } from "rxjs"
 import { v7 as uuidv7 } from "uuid"
 import { taskCreateSchema } from "../../store/useTaskStore"
 import type { Tasks } from "../../store/useTaskStore"
+import { removeDatabase } from "@/db/database"
 
 export default function Home() {
   // const tasks = taskStore((state) => state.tasks)
   // const setTasks = taskStore((state) => state.setTasks)
-  const [tasks, setTasks] = useState<Tasks>([])
+  const [tasks, setTasks] = useState<TaskDoc[]>([])
   const form = useForm({
     defaultValues: {
       name: "",
@@ -83,6 +89,15 @@ export default function Home() {
             ))
           : "Ajouter un élément à la todo list"}
       </div>
+      <Button
+        className="mt-32"
+        onClick={() => {
+          removeDatabase()
+          setTasks([])
+        }}
+      >
+        Reset database
+      </Button>
     </div>
   )
 }
