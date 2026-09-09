@@ -5,6 +5,7 @@ import {
   createRxDatabase,
   removeRxDatabase,
   type RxDatabase,
+  type RxReplicationPullStreamItem,
   type RxStorage,
 } from "rxdb/plugins/core"
 import {
@@ -16,18 +17,22 @@ import { taskSchema } from "./schemas/task.schema"
 import { RxDBMigrationSchemaPlugin } from "rxdb/plugins/migration-schema"
 import { replicateRxCollection } from "rxdb/plugins/replication"
 import type { TaskDoc } from "./queries/taskQuery"
+import { Subject } from "rxjs"
 
 type TaskCheckpoint = { id: string; updatedAt: number }
 
 const DEFAULT_UPDATED_AT = "2024-01-01T00:00:00+00:00"
 const DEFAULT_ID = "00000000-0000-0000-0000-000000000000"
 const BATCH_SIZE = 10
+const DB_NAME = "mydatabase"
+const SQLITE_CONNECTION_NAME = "_trial_" + DB_NAME
+
+const sqlite = new SQLiteConnection(CapacitorSQLite)
 
 let storageInstance: RxStorage<any, any> | null = null
 
 function getStorage(): RxStorage<any, any> {
   if (!storageInstance) {
-    const sqlite = new SQLiteConnection(CapacitorSQLite)
     const sqliteStorage = getRxStorageSQLiteTrial({
       sqliteBasics: getSQLiteBasicsCapacitor(sqlite, Capacitor),
     })
@@ -37,8 +42,8 @@ function getStorage(): RxStorage<any, any> {
 }
 
 async function createDatabase(): Promise<RxDatabase> {
-  console.log("Capacitor.getPlatform()", Capacitor.getPlatform())
-  console.log("Capacitor.isNativePlatform()", Capacitor.isNativePlatform())
+  //Ferme des connexions résiduelles hot-reload ou revenir sur l'app mise en arrière-plan
+  await sqlite.closeConnection(SQLITE_CONNECTION_NAME, false).catch(() => {})
 
   if (import.meta.env.DEV) {
     /**
@@ -52,10 +57,7 @@ async function createDatabase(): Promise<RxDatabase> {
 
   addRxPlugin(RxDBMigrationSchemaPlugin)
 
-  const db = await createRxDatabase({
-    name: "mydatabase",
-    storage: getStorage(),
-  })
+  const db = await createRxDatabase({ name: DB_NAME, storage: getStorage() })
 
   await db.addCollections({
     task: {
@@ -73,6 +75,25 @@ async function createDatabase(): Promise<RxDatabase> {
       },
     },
   })
+
+  const myPullStream$ = new Subject<
+    RxReplicationPullStreamItem<TaskDoc, TaskCheckpoint>
+  >()
+  const eventSource = new EventSource(
+    `${import.meta.env.VITE_MERCURE_URL}?topic=tasks`,
+    {
+      // withCredentials: true,
+    }
+  )
+  eventSource.onmessage = (event) => {
+    const eventData = JSON.parse(event.data)
+    myPullStream$.next({
+      documents: eventData.documents,
+      checkpoint: eventData.checkpoint,
+    })
+  }
+
+  eventSource.onerror = () => myPullStream$.next("RESYNC")
 
   const replicationState = replicateRxCollection<TaskDoc, TaskCheckpoint>({
     collection: db.task,
@@ -116,6 +137,7 @@ async function createDatabase(): Promise<RxDatabase> {
         }
       },
       batchSize: BATCH_SIZE,
+      stream$: myPullStream$.asObservable(),
     },
   })
 
@@ -136,5 +158,5 @@ export function getDatabase() {
 }
 
 export async function removeDatabase() {
-  await removeRxDatabase("mydatabase", getStorage())
+  await removeRxDatabase(DB_NAME, getStorage())
 }
