@@ -8,7 +8,7 @@ export const taskCreateSchema = z.object({
 
 export const taskSchema = taskCreateSchema.extend({
   id: z.uuidv7(),
-  image: z.string().optional(),
+  image: z.string().optional().nullable(),
   date: z.date().optional(),
 })
 

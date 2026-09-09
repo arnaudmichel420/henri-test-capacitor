@@ -1,10 +1,9 @@
-import { v7 as uuidv7 } from "uuid"
-import { getDatabase } from "../database"
-import type { Task } from "../../../store/useTaskStore"
+import { Filesystem } from "@capacitor/filesystem"
 import type { RxDocument } from "rxdb"
 import type { Observable } from "rxjs"
-import { Directory, Filesystem } from "@capacitor/filesystem"
-import { Capacitor } from "@capacitor/core"
+import { v7 as uuidv7 } from "uuid"
+import type { Task } from "../../../store/useTaskStore"
+import { getDatabase } from "../database"
 
 export type TaskDoc = Omit<Task, "date"> & { date?: string }
 
@@ -40,7 +39,7 @@ export async function deleteTask(id: string) {
   await document?.remove()
 }
 
-export async function deleteFile(path: string | undefined) {
+export async function deleteFile(path?: string | null) {
   if (!path) return
 
   try {

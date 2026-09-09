@@ -14,4 +14,5 @@ export async function photoActions() {
 
   if (index === 0) return takePicture()
   if (index === 1) return pickMedia()
+  return undefined
 }
