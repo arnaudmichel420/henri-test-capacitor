@@ -18,6 +18,8 @@ import { RxDBMigrationSchemaPlugin } from "rxdb/plugins/migration-schema"
 import { replicateRxCollection } from "rxdb/plugins/replication"
 import type { TaskDoc } from "./queries/taskQuery"
 import { Subject } from "rxjs"
+import { RxDBCleanupPlugin } from "rxdb/plugins/cleanup"
+import { secondsInHour, secondsInWeek } from "date-fns/constants"
 
 type TaskCheckpoint = { id: string; updatedAt: number }
 
@@ -56,8 +58,17 @@ async function createDatabase(): Promise<RxDatabase> {
   }
 
   addRxPlugin(RxDBMigrationSchemaPlugin)
+  addRxPlugin(RxDBCleanupPlugin)
 
-  const db = await createRxDatabase({ name: DB_NAME, storage: getStorage() })
+  const db = await createRxDatabase({
+    name: DB_NAME,
+    storage: getStorage(),
+    cleanupPolicy: {
+      minimumDeletedTime: 1000 * secondsInWeek, // purge après 7 jours
+      minimumCollectionAge: 1000 * 60,
+      runEach: 1000 * secondsInHour, // vérifie toutes les heures
+    },
+  })
 
   await db.addCollections({
     task: {
