@@ -20,6 +20,7 @@ import type { TaskDoc } from "./queries/taskQuery"
 import { Subject } from "rxjs"
 import { RxDBCleanupPlugin } from "rxdb/plugins/cleanup"
 import { secondsInHour, secondsInWeek } from "date-fns/constants"
+import { uploadSchema } from "./schemas/upload.schema"
 
 type TaskCheckpoint = { id: string; updatedAt: number }
 
@@ -83,7 +84,14 @@ async function createDatabase(): Promise<RxDatabase> {
           delete oldDoc.position
           return oldDoc
         },
+        3: function (oldDoc) {
+          delete oldDoc.image
+          return oldDoc
+        },
       },
+    },
+    upload: {
+      schema: uploadSchema,
     },
   })
 

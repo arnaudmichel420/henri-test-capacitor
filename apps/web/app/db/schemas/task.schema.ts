@@ -1,5 +1,5 @@
 export const taskSchema = {
-  version: 2,
+  version: 3,
   primaryKey: "id",
   type: "object",
   properties: {
@@ -9,9 +9,6 @@ export const taskSchema = {
     },
     name: {
       type: "string",
-    },
-    image: {
-      type: ["string", "null"],
     },
     date: {
       type: ["string", "null"],

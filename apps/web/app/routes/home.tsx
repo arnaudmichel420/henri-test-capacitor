@@ -1,11 +1,13 @@
 import BaseForm from "@/components/form-base"
 import { TextField } from "@/components/form-fields"
+import { removeDatabase } from "@/db/database"
 import {
   createTask,
   deleteTask,
   getTasks,
   type TaskDoc,
 } from "@/db/queries/taskQuery"
+import { taskCreateSchema } from "@/schemas/task.schema"
 import { Toast } from "@capacitor/toast"
 import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react"
 import { useForm } from "@tanstack/react-form"
@@ -14,14 +16,8 @@ import { FieldGroup } from "@workspace/ui/components/field"
 import { useEffect, useState } from "react"
 import { Link } from "react-router"
 import type { Subscription } from "rxjs"
-import { v7 as uuidv7 } from "uuid"
-import { taskCreateSchema } from "../../store/useTaskStore"
-import type { Tasks } from "../../store/useTaskStore"
-import { removeDatabase } from "@/db/database"
 
 export default function Home() {
-  // const tasks = taskStore((state) => state.tasks)
-  // const setTasks = taskStore((state) => state.setTasks)
   const [tasks, setTasks] = useState<TaskDoc[]>([])
   const form = useForm({
     defaultValues: {
@@ -31,7 +27,6 @@ export default function Home() {
       onSubmit: taskCreateSchema,
     },
     onSubmit: async ({ value }) => {
-      // setTasks([...tasks, { id: value.id, name: value.name }])
       await createTask({ name: value.name })
       await Toast.show({ text: "Tâche ajoutée avec succès" })
       form.reset()

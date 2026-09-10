@@ -44,17 +44,11 @@ export default function Task() {
               {format(task.date, "dd/MM/yyyy hh:mm")}
             </div>
           )}
-          {task.image && (
+          {/* {task.image && (
             <img
               src={Capacitor.convertFileSrc(task.image)}
               alt=""
               className="w-full object-contain"
-            />
-          )}
-          {/* {task.position && (
-            <Map
-              latitude={task.position.coords.latitude}
-              longitude={task.position.coords.longitude}
             />
           )} */}
         </div>

@@ -1,18 +1,16 @@
-import { Filesystem } from "@capacitor/filesystem"
+import type { Task } from "@/schemas/task.schema"
 import type { RxDocument } from "rxdb"
 import type { Observable } from "rxjs"
 import { v7 as uuidv7 } from "uuid"
-import type { Task } from "../../../store/useTaskStore"
 import { getDatabase } from "../database"
 
 export type TaskDoc = Omit<Task, "date"> & { date?: string }
 
-export async function createTask({ name, image, date }: Omit<TaskDoc, "id">) {
+export async function createTask({ name, date }: Omit<TaskDoc, "id">) {
   const db = await getDatabase()
   return await db.task.insert({
     id: uuidv7(),
     name,
-    image,
     date,
   })
 }
@@ -25,9 +23,9 @@ export async function getTasks(): Promise<Observable<RxDocument<TaskDoc>[]>> {
   return getDatabase().then((db) => db.task.find().$)
 }
 
-export async function updateTask({ id, name, image, date }: TaskDoc) {
+export async function updateTask({ id, name, date }: TaskDoc) {
   const document = await getTask(id)
-  await document?.patch({ name, image, date })
+  await document?.patch({ name, date })
 }
 
 export async function deleteTask(id: string) {
@@ -35,16 +33,5 @@ export async function deleteTask(id: string) {
 
   if (!document) return
 
-  await deleteFile(document?.image)
   await document?.remove()
-}
-
-export async function deleteFile(path?: string | null) {
-  if (!path) return
-
-  try {
-    await Filesystem.deleteFile({
-      path: path,
-    })
-  } catch (error) {}
 }

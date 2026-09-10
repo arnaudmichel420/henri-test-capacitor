@@ -4,12 +4,7 @@ import {
   ImagePickerField,
   TextField,
 } from "@/components/form-fields"
-import {
-  deleteFile,
-  getTask,
-  updateTask,
-  type TaskDoc,
-} from "@/db/queries/taskQuery"
+import { getTask, updateTask, type TaskDoc } from "@/db/queries/taskQuery"
 import { Directory, Filesystem } from "@capacitor/filesystem"
 import { Toast } from "@capacitor/toast"
 import { CaretLeftIcon } from "@phosphor-icons/react"
@@ -20,14 +15,15 @@ import { Spinner } from "@workspace/ui/components/spinner"
 import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router"
 import { z } from "zod"
-import { taskUpdateSchema } from "../../store/useTaskStore"
+import { taskUpdateSchema } from "@/schemas/task.schema"
+import { deleteFile } from "@/utils/fileUtil"
 
 function getDefaultValues(
   task: TaskDoc | undefined
-): z.input<typeof taskUpdateSchema> {
+): z.input<typeof taskUpdateSchema> & { image?: string } {
   return {
     name: task?.name ?? "",
-    image: task?.image,
+    image: undefined,
     date: task?.date ? new Date(task.date) : undefined,
   }
 }
@@ -59,16 +55,16 @@ export default function TaskEdit() {
       const parsedValue = taskUpdateSchema.parse(value)
 
       let path = ""
-      if (parsedValue?.image) {
-        path = await saveImageOnPhone(parsedValue.image)
+      if (value?.image) {
+        path = await saveImageOnPhone(value.image)
       }
 
       await updateTask({
         id,
         name: parsedValue.name,
         date: parsedValue.date,
-        image: path,
       })
+
       form.reset()
       Toast.show({ text: "Tâche modifier avec succès" })
       navigate(`/task/${id}`)
@@ -90,11 +86,11 @@ export default function TaskEdit() {
 
     const result = await Filesystem.copy({
       from: path, // ou photo.uri selon le retour de Camera.getPhoto
-      to: `todoApp/photo-${Date.now()}.jpg`,
+      to: `todoApp/upload/photo-${Date.now()}.jpg`,
       toDirectory: Directory.Documents,
     })
 
-    await deleteFile(task?.image)
+    // await deleteFile(task?.image)
 
     return result.uri
   }

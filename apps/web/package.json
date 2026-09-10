@@ -38,8 +38,7 @@
     "sql.js": "^1.14.2",
     "uuid": "^14.0.1",
     "vite-plugin-mkcert": "^2.1.0",
-    "zod": "^4.4.3",
-    "zustand": "^5.0.14"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.0",
