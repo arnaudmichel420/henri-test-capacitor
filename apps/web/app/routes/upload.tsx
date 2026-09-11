@@ -11,7 +11,6 @@ export default function Upload() {
     let subscription: Subscription
     getUploads().then((observable) => {
       subscription = observable.subscribe((uploads) => {
-        console.log(uploads)
         setUploads(uploads)
       })
     })

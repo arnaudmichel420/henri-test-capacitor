@@ -37,7 +37,6 @@ export default function Home() {
     let subscription: Subscription
     getTasks().then((observable) => {
       subscription = observable.subscribe((tasks) => {
-        console.log(tasks)
         setTasks(tasks)
       })
     })

@@ -99,17 +99,15 @@ export default function TaskEdit() {
 
   async function handleUpload(path: string, taskId: string) {
     const uploadId = uuidv7()
-    const upload = await createUpload({
+    
+    await createLocalUpload(uploadId, { uploadPath: path })
+    await createUpload({
       id: uploadId,
       taskId,
       s3Key: `uploads/${taskId}/${uploadId}.jpeg`,
       status: uploadStatusSchema.enum.pending,
-      mimeType: "jpeg/image",
+      mimeType: "image/jpeg",
     })
-    const localUpload = await createLocalUpload(uploadId, path)
-
-    console.log(upload, localUpload);
-    
   }
 
   return (

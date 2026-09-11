@@ -176,7 +176,6 @@ type ImagePickerFieldProps = {
 function ImagePickerField({ field, label, required }: ImagePickerFieldProps) {
   const errors = fieldErrors(field)
   const image = field.state.value as string
-  console.log(image)
 
   const handlePick = async () => {
     const picture = await photoActions()
