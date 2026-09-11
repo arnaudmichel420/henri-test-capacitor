@@ -2,8 +2,10 @@ import { type RouteConfig, route, index } from "@react-router/dev/routes"
 
 export default [
   index("routes/home.tsx"),
-  route("task/:id", "routes/task.tsx"),
-  route("task/edit/:id", "routes/task-edit.tsx"),
+  route("task/:id", "routes/Task/task.tsx"),
+  route("task/edit/:id", "routes/Task/task-edit.tsx"),
+  route("setting", "routes/setting.tsx"),
+  route("upload", "routes/upload.tsx"),
 ] satisfies RouteConfig
 
 // export default [

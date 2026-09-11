@@ -84,15 +84,6 @@ export default function Home() {
             ))
           : "Ajouter un élément à la todo list"}
       </div>
-      <Button
-        className="mt-32"
-        onClick={() => {
-          removeDatabase()
-          setTasks([])
-        }}
-      >
-        Reset database
-      </Button>
     </div>
   )
 }

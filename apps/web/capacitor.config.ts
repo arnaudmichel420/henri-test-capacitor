@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.capacitortest563728thab.app',
-  appName: 'henri-v4-capacitor',
+  appName: 'Dumbledoor Studio POC',
   webDir: 'build/client',
   server:{
     url: "https://192.168.1.23:8100",

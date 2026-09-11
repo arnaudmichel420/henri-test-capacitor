@@ -12,6 +12,7 @@ import "@workspace/ui/globals.css"
 import { defineCustomElements } from "@ionic/pwa-elements/loader"
 import { useEffect, useState } from "react"
 import { getDatabase } from "./db/database"
+import Menu from "./components/menu"
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -44,8 +45,7 @@ export default function App() {
     const initDb = async () => {
       const db = await getDatabase()
       setDatabase(db)
-      console.log(db);
-      
+      console.log(db)
     }
     initDb()
   }, [])
@@ -57,6 +57,7 @@ export default function App() {
   return (
     <div className="safe-area-padding">
       <Outlet />
+      <Menu />
     </div>
   )
 }

@@ -17,6 +17,9 @@ import { Link, useNavigate, useParams } from "react-router"
 import { z } from "zod"
 import { taskUpdateSchema } from "@/schemas/task.schema"
 import { deleteFile } from "@/utils/fileUtil"
+import { createLocalUpload, createUpload } from "@/db/queries/uploadQuery"
+import { v7 as uuidv7 } from "uuid"
+import { uploadStatusSchema } from "@/schemas/upload.schema"
 
 function getDefaultValues(
   task: TaskDoc | undefined
@@ -54,16 +57,16 @@ export default function TaskEdit() {
       setIsSaving(true)
       const parsedValue = taskUpdateSchema.parse(value)
 
-      let path = ""
-      if (value?.image) {
-        path = await saveImageOnPhone(value.image)
-      }
-
       await updateTask({
         id,
         name: parsedValue.name,
         date: parsedValue.date,
       })
+
+      if (value?.image) {
+        const path = await saveImageOnPhone(value.image)
+        handleUpload(path, id)
+      }
 
       form.reset()
       Toast.show({ text: "Tâche modifier avec succès" })
@@ -76,7 +79,7 @@ export default function TaskEdit() {
 
     try {
       await Filesystem.mkdir({
-        path: "todoApp",
+        path: "todoApp/upload",
         directory: Directory.Documents,
         recursive: true,
       })
@@ -91,8 +94,22 @@ export default function TaskEdit() {
     })
 
     // await deleteFile(task?.image)
-
     return result.uri
+  }
+
+  async function handleUpload(path: string, taskId: string) {
+    const uploadId = uuidv7()
+    const upload = await createUpload({
+      id: uploadId,
+      taskId,
+      s3Key: `uploads/${taskId}/${uploadId}.jpeg`,
+      status: uploadStatusSchema.enum.pending,
+      mimeType: "jpeg/image",
+    })
+    const localUpload = await createLocalUpload(uploadId, path)
+
+    console.log(upload, localUpload);
+    
   }
 
   return (
