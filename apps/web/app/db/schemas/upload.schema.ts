@@ -25,7 +25,7 @@ export const uploadSchema = {
       maxLength: 255,
     },
     sizeBytes: {
-      type: 'string',
+      type: ['string', 'null'],
       maxLength: 20,
     },
     etag: {

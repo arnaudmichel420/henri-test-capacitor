@@ -13,7 +13,7 @@ export const uploadSchema = z.object({
   s3Key: z.string(),
   status: uploadStatusSchema,
   mimeType: z.string(),
-  sizeBytes: z.string(),
+  sizeBytes: z.string().optional().nullable(),
   etag: z.string().optional().nullable(),
 })
 

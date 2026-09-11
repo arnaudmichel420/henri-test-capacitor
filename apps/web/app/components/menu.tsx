@@ -6,7 +6,11 @@ export default function Menu() {
   const location = useLocation()
 
   function isRouteActive(route: string, location: Location) {
-    const normalize = (path: string) => path.replace(/\d+$/, "")
+    const normalize = (path: string) =>
+      path.replace(
+        /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+        ""
+      )
     return normalize(location.pathname) === normalize(route)
   }
 
@@ -25,7 +29,7 @@ export default function Menu() {
     <nav className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-primary p-1 text-background">
       <ul className="flex gap-3">
         <MenuItem
-          isActive={isParentActive("/", ["/task", "/task/edit"], location)}
+          isActive={isParentActive("/", ["/task/", "/task/edit/"], location)}
           to={"/"}
           Icon={HouseIcon}
         />

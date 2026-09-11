@@ -202,7 +202,7 @@ function ImagePickerField({ field, label, required }: ImagePickerFieldProps) {
         <img
           src={Capacitor.convertFileSrc(image)}
           alt=""
-          className="max-h-40 rounded"
+          className="max-h-40 rounded object-contain"
         />
       )}
       <FieldError errors={errors} />

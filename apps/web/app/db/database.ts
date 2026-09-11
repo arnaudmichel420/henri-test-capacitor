@@ -92,6 +92,7 @@ async function createDatabase(): Promise<RxDatabase> {
     },
     upload: {
       schema: uploadSchema,
+      localDocuments: true
     },
   })
 
