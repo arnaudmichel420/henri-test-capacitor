@@ -57,7 +57,6 @@ export default function App() {
   return (
     <div className="safe-area-padding">
       <Outlet />
-      <Menu />
     </div>
   )
 }

@@ -26,7 +26,7 @@ export default function Menu() {
     })
   }
   return (
-    <nav className="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-primary p-1 text-background">
+    <nav className="fixed bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-primary p-1 text-background">
       <ul className="flex gap-3">
         <MenuItem
           isActive={isParentActive("/", ["/task/", "/task/edit/"], location)}
