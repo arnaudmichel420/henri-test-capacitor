@@ -1,38 +1,50 @@
-import { uploadStatusSchema, type Upload } from "@/schemas/upload.schema"
-import type { RxChangeEvent, RxDatabase, RxDocument } from "rxdb"
 import {
+  downloadFile,
+  getPresignGetUrl,
+  getPresignPutUrl,
+  uploadFile,
+} from "@/api/s3Api"
+import { uploadStatusSchema, type Upload } from "@/schemas/upload.schema"
+import {
+  copyFileToFolder,
+  getFileFromPath,
+  moveFileToPermanentFolder,
+  writeBlobToFolder,
+} from "@/utils/fileUtil"
+import type { RxDocumentData } from "rxdb"
+import type { RxReplicationState } from "rxdb/plugins/replication"
+import {
+  createLocalUpload,
   getLocalUpload,
   getLocalUploads,
+  getUploadWithoutLocal,
   updateLocalUpload,
   updateUpload,
 } from "../queries/uploadQuery"
-import { getDatabase } from "../database"
-import { Directory, Filesystem } from "@capacitor/filesystem"
-import { updateTask } from "../queries/taskQuery"
+import type { UploadCheckpoint } from "./upload.replication"
 
-export default async function replicateFile() {
+export default async function replicateFile(
+  replicationState: RxReplicationState<Upload, UploadCheckpoint>
+) {
   await processExistingPendingUploads()
-  const db = await getDatabase()
-  db.upload.$.subscribe((changeEvent: RxChangeEvent<RxDocument<Upload>>) => {
-    if (
-      changeEvent.operation === "INSERT" &&
-      changeEvent.documentData.status === "pending"
-    ) {
-      console.log(changeEvent)
-        //todo pb de sync le call pour la presign url est envoyé avant que ce soit persist en bdd
-      getLocalUpload(changeEvent.documentData.id).then(
-        (uploadPath: string | undefined) => {
-          if (!uploadPath) return
-          enqueueUpload({ doc: changeEvent.documentData, uploadPath })
-        }
-      )
+  await processExistingUploadedWithoutLocalFile()
+
+  replicationState.received$.subscribe((doc: RxDocumentData<Upload>) => {
+    if (doc.status === "pending") {
+      console.log(doc)
+      getLocalUpload(doc.id).then((path: string | undefined) => {
+        if (!path) return
+        enqueueUpload({ doc, path })
+      })
+    } else if (doc.status === "uploaded") {
+      processDownload(doc)
     }
   })
 }
 
 export interface UploadWithPath {
   doc: Upload
-  uploadPath: string
+  path: string
 }
 
 async function processExistingPendingUploads() {
@@ -44,13 +56,13 @@ async function processExistingPendingUploads() {
   }
 }
 
-const inFlight = new Set()
+const uploadsInFlight = new Set()
 
 function enqueueUpload(docWithPath: UploadWithPath) {
   const doc = docWithPath.doc
-  if (inFlight.has(doc.id)) return
-  inFlight.add(doc.id)
-  processUpload(docWithPath).finally(() => inFlight.delete(doc.id))
+  if (uploadsInFlight.has(doc.id)) return
+  uploadsInFlight.add(doc.id)
+  processUpload(docWithPath).finally(() => uploadsInFlight.delete(doc.id))
 }
 
 async function processUpload(docWithPath: UploadWithPath) {
@@ -58,6 +70,7 @@ async function processUpload(docWithPath: UploadWithPath) {
 
   const presignedUrl = await getPresignPutUrl(doc.id)
   if (!presignedUrl) return
+console.log(presignedUrl + " presi");
 
   const file = await getFileFromPath(docWithPath)
   if (!file) return
@@ -74,70 +87,39 @@ async function processUpload(docWithPath: UploadWithPath) {
   })
 
   //deplacer l'image
-  const newUploadPath = await moveFileToPermanentFolder(docWithPath.uploadPath)
+  const newUploadPath = await moveFileToPermanentFolder(docWithPath.path)
 
   //modifier le localFile
   await updateLocalUpload(doc.id, { localUri: newUploadPath })
 }
 
-async function getPresignPutUrl(id: string): Promise<string> {
-  const res = await fetch(
-    `${import.meta.env.VITE_BACK_URL}/uploads/${id}/upload-url`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    }
-  )
-  return ((await res.json()) as { url: string }).url
-}
+const downloadsInFlight = new Set()
 
-async function uploadFile(
-  presignedUrl: string,
-  docWithPath: UploadWithPath,
-  file: Blob
-): Promise<any> {
-  const res = await fetch(presignedUrl, {
-    method: "PUT",
-    headers: { "Content-Type": docWithPath.doc.mimeType },
-    body: file,
-  })
+async function processExistingUploadedWithoutLocalFile() {
+  const localUploads = await getUploadWithoutLocal()
 
-  if (!res.ok) throw new Error("Upload failed")
-
-  return res
-}
-
-async function getFileFromPath(docWithPath: UploadWithPath) {
-  const result = await Filesystem.readFile({ path: docWithPath.uploadPath })
-  const res = await fetch(
-    `data:${docWithPath.doc.mimeType};base64,${result.data}`
-  )
-  return await res.blob()
-}
-
-async function moveFileToPermanentFolder(uploadPath: string): Promise<string> {
-  try {
-    await Filesystem.mkdir({
-      path: "todoApp/save",
-      directory: Directory.Documents,
-      recursive: true,
-    })
-  } catch {
-    // ponytail: le plugin Android renvoie "already exists" même avec recursive: true, on ignore
+  console.log(localUploads)
+  for (const localUpload of localUploads) {
+    enqueueDownload(localUpload)
   }
+}
 
-  const newPath = `todoApp/save${uploadPath.split("todoApp/upload")[1]}`
+function enqueueDownload(doc: Upload) {
+  if (downloadsInFlight.has(doc.id)) return
+  downloadsInFlight.add(doc.id)
+  processDownload(doc).finally(() => downloadsInFlight.delete(doc.id))
+}
 
-  await Filesystem.rename({
-    from: uploadPath,
-    to: newPath,
-    toDirectory: Directory.Documents,
-  })
+async function processDownload(doc: Upload) {
+  const presignedUrl = await getPresignGetUrl(doc.id)
+  if (!presignedUrl) return
 
-  const { uri } = await Filesystem.getUri({
-    path: newPath,
-    directory: Directory.Documents,
-  })
+  const file = await downloadFile(presignedUrl)
+  if (!file) return
 
-  return uri
+  //mettre le fichier
+  const localPath = await writeBlobToFolder(file, "todoApp/save")
+
+  //creer un local upload
+  await createLocalUpload(doc.id, { localUri: localPath })
 }

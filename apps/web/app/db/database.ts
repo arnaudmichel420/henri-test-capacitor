@@ -91,8 +91,8 @@ async function createDatabase(): Promise<RxDatabase> {
   })
 
   replicateTasks(db)
-  replicateUploads(db)
-  replicateFile()
+  const replicationState = replicateUploads(db)
+  replicateFile(replicationState)
 
   return db
 }

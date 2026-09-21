@@ -3,7 +3,7 @@ import { replicateRxCollection } from "rxdb/plugins/replication"
 import { Subject } from "rxjs"
 import type { Upload } from "@/schemas/upload.schema"
 
-type UploadCheckpoint = { id: string; updatedAt: number }
+export type UploadCheckpoint = { id: string; updatedAt: number }
 
 const DEFAULT_UPDATED_AT = "2024-01-01T00:00:00+00:00"
 const DEFAULT_ID = "00000000-0000-0000-0000-000000000000"

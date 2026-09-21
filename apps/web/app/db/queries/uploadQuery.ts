@@ -73,12 +73,33 @@ export async function getLocalUploads(): Promise<UploadWithPath[]> {
       const localDoc = await db.upload.getLocal(doc.id)
       return {
         doc,
-        uploadPath: localDoc?.get("uploadPath") ?? null,
+        path: localDoc?.get("uploadPath") ?? null,
       }
     })
   )
 
-  return withLocalData.filter((item) => item.uploadPath !== null)
+  return withLocalData.filter((item) => item.path !== null)
+}
+
+export async function getUploadWithoutLocal(): Promise<Uploads> {
+  const db = await getDatabase()
+  const uploadedDocs: Uploads = await db.upload
+    .find({ selector: { status: "uploaded" } })
+    .exec()
+
+  const withLocalData = await Promise.all(
+    uploadedDocs.map(async (doc: Upload) => {
+      const localDoc = await db.upload.getLocal(doc.id)
+      return {
+        doc,
+        path: localDoc?.get("localUri") ?? null,
+      }
+    })
+  )
+
+  return withLocalData
+    .filter((item) => item.path === null)
+    ?.map((item) => item.doc)
 }
 
 export async function getUpload(

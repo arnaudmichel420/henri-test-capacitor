@@ -13,7 +13,6 @@ export default function UploadItem({ upload }: UploadItemProps) {
   useEffect(() => {
     getLocalUpload(upload.id).then((localUpload) => {
       setLocalUpload(localUpload)
-      console.log(upload.id + ": " + localUpload)
     })
   }, [upload.id])
 

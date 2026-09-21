@@ -23,3 +23,7 @@ npx cap open android  # opens Android Studio
 ```
 
 pnpm dev -- --host --port 8100
+
+### Todo
+
+suppression : supprimer upload, le fichier dans le s3 et repercuter les modifs dans les clients

@@ -47,7 +47,6 @@ export default function App() {
       }
       const db = await getDatabase()
       setDatabase(db)
-      console.log(db)
     }
     initDb()
   }, [])
