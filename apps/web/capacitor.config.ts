@@ -1,34 +1,34 @@
-import type { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from "@capacitor/cli"
 
 const config: CapacitorConfig = {
-  appId: 'com.capacitortest563728thab.app',
-  appName: 'Dumbledoor Studio POC',
-  webDir: 'build/client',
-  server:{
-    url: "https://192.168.1.23:8100",
+  appId: "com.capacitortest563728thab.app",
+  appName: "Dumbledoor Studio POC",
+  webDir: "build/client",
+  server: {
+    url: "https://192.168.1.20:8100",
     // cleartext: true
   },
   plugins: {
     CapacitorSQLite: {
-      iosDatabaseLocation: 'Library/CapacitorDatabase',
+      iosDatabaseLocation: "Library/CapacitorDatabase",
       iosIsEncryption: true,
-      iosKeychainPrefix: 'angular-sqlite-app-starter',
+      iosKeychainPrefix: "angular-sqlite-app-starter",
       iosBiometric: {
         biometricAuth: false,
-        biometricTitle : "Biometric login for capacitor sqlite"
+        biometricTitle: "Biometric login for capacitor sqlite",
       },
       androidIsEncryption: true,
       androidBiometric: {
-        biometricAuth : false,
-        biometricTitle : "Biometric login for capacitor sqlite",
-        biometricSubTitle : "Log in using your biometric"
+        biometricAuth: false,
+        biometricTitle: "Biometric login for capacitor sqlite",
+        biometricSubTitle: "Log in using your biometric",
       },
       electronIsEncryption: true,
       electronWindowsLocation: "C:\\ProgramData\\CapacitorDatabases",
       electronMacLocation: "/Volumes/Development_Lacie/Development/Databases",
-      electronLinuxLocation: "Databases"
-    }
-  }
-};
+      electronLinuxLocation: "Databases",
+    },
+  },
+}
 
-export default config;
+export default config
