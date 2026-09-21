@@ -5,7 +5,10 @@ import {
   TextField,
 } from "@/components/form-fields"
 import { getTask, updateTask, type TaskDoc } from "@/db/queries/taskQuery"
-import { Directory, Filesystem } from "@capacitor/filesystem"
+import { createLocalUpload, createUpload } from "@/db/queries/uploadQuery"
+import { taskUpdateSchema } from "@/schemas/task.schema"
+import { uploadStatusSchema } from "@/schemas/upload.schema"
+import { copyFileToFolder } from "@/utils/fileUtil"
 import { Toast } from "@capacitor/toast"
 import { CaretLeftIcon } from "@phosphor-icons/react"
 import { useForm } from "@tanstack/react-form"
@@ -14,12 +17,8 @@ import { FieldGroup } from "@workspace/ui/components/field"
 import { Spinner } from "@workspace/ui/components/spinner"
 import { useEffect, useMemo, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router"
-import { z } from "zod"
-import { taskUpdateSchema } from "@/schemas/task.schema"
-import { deleteFile } from "@/utils/fileUtil"
-import { createLocalUpload, createUpload } from "@/db/queries/uploadQuery"
 import { v7 as uuidv7 } from "uuid"
-import { uploadStatusSchema } from "@/schemas/upload.schema"
+import { z } from "zod"
 
 function getDefaultValues(
   task: TaskDoc | undefined
@@ -77,24 +76,8 @@ export default function TaskEdit() {
   async function saveImageOnPhone(path: string): Promise<string> {
     if (path.includes("/todoApp/")) return path
 
-    try {
-      await Filesystem.mkdir({
-        path: "todoApp/upload",
-        directory: Directory.Documents,
-        recursive: true,
-      })
-    } catch {
-      // ponytail: le plugin Android renvoie "already exists" même avec recursive: true, on ignore
-    }
-
-    const result = await Filesystem.copy({
-      from: path, // ou photo.uri selon le retour de Camera.getPhoto
-      to: `todoApp/upload/photo-${Date.now()}.jpg`,
-      toDirectory: Directory.Documents,
-    })
-
     // await deleteFile(task?.image)
-    return result.uri
+    return await copyFileToFolder(path, "todoApp/upload")
   }
 
   async function handleUpload(path: string, taskId: string) {
