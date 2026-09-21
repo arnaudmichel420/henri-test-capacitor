@@ -7,12 +7,11 @@ import {
   isRouteErrorResponse,
 } from "react-router"
 
-import type { Route } from "./+types/root"
-import "@workspace/ui/globals.css"
 import { defineCustomElements } from "@ionic/pwa-elements/loader"
+import "@workspace/ui/globals.css"
 import { useEffect, useState } from "react"
+import type { Route } from "./+types/root"
 import { getDatabase } from "./db/database"
-import Menu from "./components/menu"
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -43,6 +42,9 @@ export default function App() {
 
   useEffect(() => {
     const initDb = async () => {
+      if (import.meta.env.DEV) {
+        await new Promise((r) => setTimeout(r, 3000)) // 3s pour ouvrir l'inspecteur
+      }
       const db = await getDatabase()
       setDatabase(db)
       console.log(db)
