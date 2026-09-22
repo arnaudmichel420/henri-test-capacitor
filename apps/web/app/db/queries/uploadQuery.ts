@@ -1,5 +1,6 @@
 import type { Upload, Uploads } from "@/schemas/upload.schema"
-import type { RxDocument } from "rxdb"
+import type { RxDocument, RxDocumentData } from "rxdb"
+import { normalizeMangoQuery, prepareQuery } from "rxdb"
 import type { Observable } from "rxjs"
 import { getDatabase } from "../database"
 import type { UploadWithPath } from "../replication/file.replication"
@@ -102,6 +103,32 @@ export async function getUploadWithoutLocal(): Promise<Uploads> {
     ?.map((item) => item.doc)
 }
 
+export async function getDeletedUpload(): Promise<UploadWithPath[]> {
+  const db = await getDatabase()
+  const normalizedQuery = normalizeMangoQuery<RxDocumentData<Upload>>(
+    db.upload.schema.jsonSchema,
+    { selector: { _deleted: { $eq: true } } }
+  )
+  const preparedQuery = prepareQuery<RxDocumentData<Upload>>(
+    db.upload.schema.jsonSchema,
+    normalizedQuery
+  )
+  const deletedDocs = await db.upload.storageInstance.query(preparedQuery)
+  console.log(deletedDocs)
+
+  const withLocalData = await Promise.all(
+    deletedDocs?.documents?.map(async (doc: Upload) => {
+      const localDoc = await db.upload.getLocal(doc.id)
+      return {
+        doc,
+        path: localDoc?.get("localUri") ?? null,
+      }
+    })
+  )
+
+  return withLocalData.filter((item) => item.path !== null)
+}
+
 export async function getUpload(
   id: string
 ): Promise<RxDocument<Upload> | null> {
@@ -117,10 +144,10 @@ export async function updateUpload(
   await document?.patch(data)
 }
 
-// export async function deleteTask(id: string) {
-//   const document = await getTask(id)
-
-//   if (!document) return
-
-//   await document?.remove()
-// }
+export async function deleteLocalDocFromUpload(id: string) {
+  const db = await getDatabase()
+  const localDoc = await db.upload.getLocal(id)
+  await localDoc?.remove()
+  console.log("local docs deleted");
+  
+}

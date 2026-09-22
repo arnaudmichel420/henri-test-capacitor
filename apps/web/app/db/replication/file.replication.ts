@@ -6,7 +6,7 @@ import {
 } from "@/api/s3Api"
 import { uploadStatusSchema, type Upload } from "@/schemas/upload.schema"
 import {
-  copyFileToFolder,
+  deleteFile,
   getFileFromPath,
   moveFileToPermanentFolder,
   writeBlobToFolder,
@@ -15,6 +15,8 @@ import type { RxDocumentData } from "rxdb"
 import type { RxReplicationState } from "rxdb/plugins/replication"
 import {
   createLocalUpload,
+  deleteLocalDocFromUpload,
+  getDeletedUpload,
   getLocalUpload,
   getLocalUploads,
   getUploadWithoutLocal,
@@ -28,6 +30,7 @@ export default async function replicateFile(
 ) {
   await processExistingPendingUploads()
   await processExistingUploadedWithoutLocalFile()
+  await processExistingDeletedUpload()
 
   replicationState.received$.subscribe((doc: RxDocumentData<Upload>) => {
     if (doc.status === "pending") {
@@ -36,8 +39,13 @@ export default async function replicateFile(
         if (!path) return
         enqueueUpload({ doc, path })
       })
-    } else if (doc.status === "uploaded") {
-      processDownload(doc)
+    } else if (doc.status === "uploaded" && !doc._deleted) {
+      enqueueDownload(doc)
+    } else if (doc._deleted) {
+      getLocalUpload(doc.id).then((path: string | undefined) => {
+        if (!path) return
+        enqueueDeleted({ doc, path })
+      })
     }
   })
 }
@@ -48,11 +56,11 @@ export interface UploadWithPath {
 }
 
 async function processExistingPendingUploads() {
-  const localUploads = await getLocalUploads()
+  const toUploadUploads = await getLocalUploads()
 
-  console.log(localUploads)
-  for (const localUpload of localUploads) {
-    enqueueUpload(localUpload)
+  console.log(toUploadUploads)
+  for (const toUploadUpload of toUploadUploads) {
+    enqueueUpload(toUploadUpload)
   }
 }
 
@@ -70,14 +78,12 @@ async function processUpload(docWithPath: UploadWithPath) {
 
   const presignedUrl = await getPresignPutUrl(doc.id)
   if (!presignedUrl) return
-console.log(presignedUrl + " presi");
 
   const file = await getFileFromPath(docWithPath)
   if (!file) return
 
   const response = await uploadFile(presignedUrl, docWithPath, file)
   const etag = response.headers.get("ETag")
-  console.log(etag)
 
   //save upload
   await updateUpload(doc.id, {
@@ -96,11 +102,11 @@ console.log(presignedUrl + " presi");
 const downloadsInFlight = new Set()
 
 async function processExistingUploadedWithoutLocalFile() {
-  const localUploads = await getUploadWithoutLocal()
+  const toDownloadUploads = await getUploadWithoutLocal()
 
-  console.log(localUploads)
-  for (const localUpload of localUploads) {
-    enqueueDownload(localUpload)
+  console.log(toDownloadUploads)
+  for (const toDownloadUpload of toDownloadUploads) {
+    enqueueDownload(toDownloadUpload)
   }
 }
 
@@ -122,4 +128,32 @@ async function processDownload(doc: Upload) {
 
   //creer un local upload
   await createLocalUpload(doc.id, { localUri: localPath })
+}
+
+const deletedInFlight = new Set()
+
+async function processExistingDeletedUpload() {
+  const toDeleteUploads = await getDeletedUpload()
+
+  console.log(toDeleteUploads)
+  for (const toDeleteUpload of toDeleteUploads) {
+    enqueueDeleted(toDeleteUpload)
+  }
+}
+
+function enqueueDeleted(docWithPath: UploadWithPath) {
+  const doc = docWithPath.doc
+  if (deletedInFlight.has(doc.id)) return
+  deletedInFlight.add(doc.id)
+  processDeleted(docWithPath).finally(() =>
+    deletedInFlight.delete(docWithPath.doc.id)
+  )
+}
+
+async function processDeleted(docWithPath: UploadWithPath) {
+  //delete file
+  await deleteFile(docWithPath.path)
+
+  //delete local docs
+  await deleteLocalDocFromUpload(docWithPath.doc.id)
 }

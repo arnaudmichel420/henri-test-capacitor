@@ -27,3 +27,7 @@ pnpm dev -- --host --port 8100
 ### Todo
 
 suppression : supprimer upload, le fichier dans le s3 et repercuter les modifs dans les clients
+
+update : delete l'ancien upload, creer le nouveau / delete l'ancien s3, cree le nouveau s3 / delete l'ancien fichier
+
+reactivité sur les changements d'images
