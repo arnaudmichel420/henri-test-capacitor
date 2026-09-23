@@ -1,14 +1,17 @@
 import type { UploadWithPath } from "@/db/replication/file.replication"
 import { Directory, Filesystem } from "@capacitor/filesystem"
 
-export async function deleteFile(path?: string | null) {
+export async function deleteFile(path?: string | null) {  
   if (!path) return
 
   try {
     await Filesystem.deleteFile({
       path: path,
     })
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+    
+  }
 }
 
 async function ensureFolder(path: string) {

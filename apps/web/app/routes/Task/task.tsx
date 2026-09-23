@@ -22,7 +22,7 @@ export default function Task() {
       if (!upload) return
       getLocalUpload(upload.id).then(setLocalUpload)
     })
-  }, [])
+  }, [task])
 
   if (!task)
     return (

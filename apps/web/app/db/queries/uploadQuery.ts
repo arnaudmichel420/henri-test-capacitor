@@ -2,6 +2,7 @@ import type { Upload, Uploads } from "@/schemas/upload.schema"
 import type { RxDocument, RxDocumentData } from "rxdb"
 import { normalizeMangoQuery, prepareQuery } from "rxdb"
 import type { Observable } from "rxjs"
+import { deleteFile } from "@/utils/fileUtil"
 import { getDatabase } from "../database"
 import type { UploadWithPath } from "../replication/file.replication"
 
@@ -148,6 +149,16 @@ export async function deleteLocalDocFromUpload(id: string) {
   const db = await getDatabase()
   const localDoc = await db.upload.getLocal(id)
   await localDoc?.remove()
-  console.log("local docs deleted");
-  
+}
+
+export async function deleteUploadsByTask(id: string) {
+  const db = await getDatabase()
+  const upload = await db.upload.findOne({ selector: { taskId: id } }).exec()
+  if (!upload) return
+
+  const path = await getLocalUpload(upload.id)
+
+  await upload.remove()
+  await deleteFile(path)
+  await deleteLocalDocFromUpload(upload.id)
 }

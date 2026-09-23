@@ -33,8 +33,9 @@ export default async function replicateFile(
   await processExistingDeletedUpload()
 
   replicationState.received$.subscribe((doc: RxDocumentData<Upload>) => {
+    console.log(doc);
+    
     if (doc.status === "pending") {
-      console.log(doc)
       getLocalUpload(doc.id).then((path: string | undefined) => {
         if (!path) return
         enqueueUpload({ doc, path })
