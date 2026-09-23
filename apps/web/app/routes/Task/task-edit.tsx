@@ -78,18 +78,18 @@ export default function TaskEdit() {
       })
 
       if (value?.image && value.image !== image) {
-        console.log(value.image)
-        console.log(image)
-
-        const path = await copyFileToFolder(value.image, "todoApp/upload")
+        const uploadId = uuidv7()
+        const path = await copyFileToFolder(
+          value.image,
+          "todoApp/upload",
+          uploadId
+        )
 
         if (image) {
-          console.log("delete call")
-
           await deleteUploadsByTask(id)
         }
 
-        await handleUpload(path, id)
+        await handleUpload(path, id, uploadId)
       }
 
       form.reset()
@@ -98,9 +98,7 @@ export default function TaskEdit() {
     },
   })
 
-  async function handleUpload(path: string, taskId: string) {
-    const uploadId = uuidv7()
-
+  async function handleUpload(path: string, taskId: string, uploadId: string) {
     await createLocalUpload(uploadId, { uploadPath: path })
     await createUpload({
       id: uploadId,

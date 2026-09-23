@@ -47,6 +47,11 @@ export async function getUploads(): Promise<Observable<RxDocument<Upload>[]>> {
   return getDatabase().then((db) => db.upload.find().$)
 }
 
+export async function getUploadsStatic(): Promise<RxDocument<Uploads> | null> {
+  const db = await getDatabase()
+  return db.upload.find().exec()
+}
+
 export async function getUploadByTaskId(
   taskId: string
 ): Promise<RxDocument<Upload> | null> {
@@ -115,7 +120,6 @@ export async function getDeletedUpload(): Promise<UploadWithPath[]> {
     normalizedQuery
   )
   const deletedDocs = await db.upload.storageInstance.query(preparedQuery)
-  console.log(deletedDocs)
 
   const withLocalData = await Promise.all(
     deletedDocs?.documents?.map(async (doc: Upload) => {

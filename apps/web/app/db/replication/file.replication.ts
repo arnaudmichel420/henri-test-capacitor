@@ -6,6 +6,7 @@ import {
 } from "@/api/s3Api"
 import { uploadStatusSchema, type Upload } from "@/schemas/upload.schema"
 import {
+  cleanupTombstone,
   deleteFile,
   getFileFromPath,
   moveFileToPermanentFolder,
@@ -32,9 +33,9 @@ export default async function replicateFile(
   await processExistingUploadedWithoutLocalFile()
   await processExistingDeletedUpload()
 
+  await cleanupTombstone()
+
   replicationState.received$.subscribe((doc: RxDocumentData<Upload>) => {
-    console.log(doc);
-    
     if (doc.status === "pending") {
       getLocalUpload(doc.id).then((path: string | undefined) => {
         if (!path) return
@@ -58,8 +59,6 @@ export interface UploadWithPath {
 
 async function processExistingPendingUploads() {
   const toUploadUploads = await getLocalUploads()
-
-  console.log(toUploadUploads)
   for (const toUploadUpload of toUploadUploads) {
     enqueueUpload(toUploadUpload)
   }
@@ -102,10 +101,8 @@ async function processUpload(docWithPath: UploadWithPath) {
 
 const downloadsInFlight = new Set()
 
-async function processExistingUploadedWithoutLocalFile() {
+export async function processExistingUploadedWithoutLocalFile() {
   const toDownloadUploads = await getUploadWithoutLocal()
-
-  console.log(toDownloadUploads)
   for (const toDownloadUpload of toDownloadUploads) {
     enqueueDownload(toDownloadUpload)
   }
@@ -125,7 +122,7 @@ async function processDownload(doc: Upload) {
   if (!file) return
 
   //mettre le fichier
-  const localPath = await writeBlobToFolder(file, "todoApp/save")
+  const localPath = await writeBlobToFolder(file, "todoApp/save", doc.id)
 
   //creer un local upload
   await createLocalUpload(doc.id, { localUri: localPath })
@@ -135,8 +132,6 @@ const deletedInFlight = new Set()
 
 async function processExistingDeletedUpload() {
   const toDeleteUploads = await getDeletedUpload()
-
-  console.log(toDeleteUploads)
   for (const toDeleteUpload of toDeleteUploads) {
     enqueueDeleted(toDeleteUpload)
   }

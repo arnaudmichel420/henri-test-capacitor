@@ -2,6 +2,7 @@ import type { RxDatabase, RxReplicationPullStreamItem } from "rxdb/plugins/core"
 import { replicateRxCollection } from "rxdb/plugins/replication"
 import { Subject } from "rxjs"
 import type { Upload } from "@/schemas/upload.schema"
+import { processExistingUploadedWithoutLocalFile } from "./file.replication"
 
 export type UploadCheckpoint = { id: string; updatedAt: number }
 
@@ -61,6 +62,8 @@ export function replicateUploads(db: RxDatabase) {
         const response = await fetch(url)
         const data = await response.json()
 
+        await processExistingUploadedWithoutLocalFile()
+        
         return {
           documents: data.documents,
           checkpoint: data.checkpoint,
