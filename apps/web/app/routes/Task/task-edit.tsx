@@ -4,7 +4,7 @@ import {
   ImagePickerField,
   TextField,
 } from "@/components/form-fields"
-import { getTask, updateTask, type TaskDoc } from "@/db/queries/taskQuery"
+import { deleteTask, getTask, updateTask, type TaskDoc } from "@/db/queries/taskQuery"
 import {
   createLocalUpload,
   createUpload,
@@ -33,7 +33,9 @@ function getDefaultValues(
   return {
     name: task?.name ?? "",
     image,
-    date: task?.date ? new Date(task.date) : undefined,
+    scheduledAt: task?.scheduledAt ? new Date(task.scheduledAt) : undefined,
+    done: task?.done ?? false,
+    doneAt: task?.doneAt ? new Date(task.doneAt) : undefined,
   }
 }
 
@@ -74,7 +76,9 @@ export default function TaskEdit() {
       await updateTask({
         id,
         name: parsedValue.name,
-        date: parsedValue.date,
+        scheduledAt: parsedValue.scheduledAt,
+        done: parsedValue.done,
+        doneAt: parsedValue.doneAt,
       })
 
       if (value?.image && value.image !== image) {
@@ -97,6 +101,13 @@ export default function TaskEdit() {
       navigate(`/task/${id}`)
     },
   })
+
+  async function handleDelete() {
+    if (!id) return
+    await deleteTask(id)
+    Toast.show({ text: "Tâche supprimée avec succès" })
+    navigate("/")
+  }
 
   async function handleUpload(path: string, taskId: string, uploadId: string) {
     await createLocalUpload(uploadId, { uploadPath: path })
@@ -124,16 +135,23 @@ export default function TaskEdit() {
               <form.Field name="name">
                 {(field) => <TextField field={field} label="Nom" required />}
               </form.Field>
+              <form.Field name="scheduledAt">
+                {(field) => (
+                  <DateTimePickerField field={field} label="Prévu pour" />
+                )}
+              </form.Field>
               <form.Field name="image">
                 {(field) => <ImagePickerField field={field} label="Image" />}
               </form.Field>
-              <form.Field name="date">
-                {(field) => <DateTimePickerField field={field} label="Date" />}
-              </form.Field>
             </FieldGroup>
-            <Button disabled={isSaving} type="submit" className="self-center">
-              Modifier la tache
-            </Button>
+            <div className="flex items-center justify-center gap-2">
+              <Button type="button" variant="destructive" onClick={handleDelete}>
+                Supprimer
+              </Button>
+              <Button disabled={isSaving} type="submit">
+                Modifier la tache
+              </Button>
+            </div>
           </BaseForm>
         ) : (
           <div className="text-2xl">Tache introuvable</div>

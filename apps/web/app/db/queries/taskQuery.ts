@@ -4,14 +4,22 @@ import type { Observable } from "rxjs"
 import { v7 as uuidv7 } from "uuid"
 import { getDatabase } from "../database"
 
-export type TaskDoc = Omit<Task, "date"> & { date?: string }
+export type TaskDoc = Omit<Task, "scheduledAt" | "doneAt"> & {
+  scheduledAt?: string | null
+  doneAt?: string | null
+}
 
-export async function createTask({ name, date }: Omit<TaskDoc, "id">) {
+export async function createTask({
+  name,
+  scheduledAt,
+}: Omit<TaskDoc, "id" | "done" | "doneAt">) {
   const db = await getDatabase()
   return await db.task.insert({
     id: uuidv7(),
     name,
-    date,
+    scheduledAt: scheduledAt ?? null,
+    done: false,
+    doneAt: null,
   })
 }
 export async function getTask(id: string): Promise<RxDocument<TaskDoc> | null> {
@@ -23,9 +31,20 @@ export async function getTasks(): Promise<Observable<RxDocument<TaskDoc>[]>> {
   return getDatabase().then((db) => db.task.find().$)
 }
 
-export async function updateTask({ id, name, date }: TaskDoc) {
+export async function updateTask({
+  id,
+  name,
+  scheduledAt,
+  done,
+  doneAt,
+}: TaskDoc) {
   const document = await getTask(id)
-  await document?.patch({ name, date })
+  await document?.patch({
+    name,
+    scheduledAt: scheduledAt ?? null,
+    done,
+    doneAt: doneAt ?? null,
+  })
 }
 
 export async function deleteTask(id: string) {

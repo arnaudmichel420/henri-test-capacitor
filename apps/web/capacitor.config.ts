@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: "Dumbledoor Studio POC",
   webDir: "build/client",
   server: {
-    url: "https://192.168.1.20:8100",
+    url: "https://192.168.1.16:8100",
     // cleartext: true
   },
   plugins: {

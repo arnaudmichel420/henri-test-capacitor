@@ -1,5 +1,5 @@
 export const taskSchema = {
-  version: 3,
+  version: 4,
   primaryKey: "id",
   type: "object",
   properties: {
@@ -10,7 +10,15 @@ export const taskSchema = {
     name: {
       type: "string",
     },
-    date: {
+    scheduledAt: {
+      type: ["string", "null"],
+      format: "date-time",
+    },
+    done: {
+      type: "boolean",
+      default: false,
+    },
+    doneAt: {
       type: ["string", "null"],
       format: "date-time",
     },

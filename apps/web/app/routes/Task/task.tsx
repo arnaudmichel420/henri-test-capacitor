@@ -45,9 +45,9 @@ export default function Task() {
         <div className="flex flex-col gap-2 py-2">
           <div className="text-xl">{task.name}</div>
           <div className="text-sm font-light">{task.id}</div>
-          {task.date && (
+          {task.scheduledAt && (
             <div className="text-sm font-light">
-              {format(task.date, "dd/MM/yyyy hh:mm")}
+              {format(task.scheduledAt, "dd/MM/yyyy hh:mm")}
             </div>
           )}
           {localUpload && (

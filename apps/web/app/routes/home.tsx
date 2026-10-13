@@ -1,24 +1,25 @@
 import BaseForm from "@/components/form-base"
 import { TextField } from "@/components/form-fields"
-import { removeDatabase } from "@/db/database"
 import {
   createTask,
-  deleteTask,
   getTasks,
+  updateTask,
   type TaskDoc,
 } from "@/db/queries/taskQuery"
 import { taskCreateSchema } from "@/schemas/task.schema"
 import { Toast } from "@capacitor/toast"
-import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react"
+import { PlusCircleIcon } from "@phosphor-icons/react"
 import { useForm } from "@tanstack/react-form"
 import { Button } from "@workspace/ui/components/button"
+import { Checkbox } from "@workspace/ui/components/checkbox"
 import { FieldGroup } from "@workspace/ui/components/field"
 import { useEffect, useState } from "react"
 import { Link } from "react-router"
+import type { RxDocument } from "rxdb"
 import type { Subscription } from "rxjs"
 
 export default function Home() {
-  const [tasks, setTasks] = useState<TaskDoc[]>([])
+  const [tasks, setTasks] = useState<RxDocument<TaskDoc>[]>([])
   const form = useForm({
     defaultValues: {
       name: "",
@@ -44,20 +45,23 @@ export default function Home() {
     return () => subscription?.unsubscribe()
   }, [])
 
-  async function removeTask(taskId: string): Promise<void> {
-    await deleteTask(taskId)
-    await Toast.show({ text: "Tâche supprimée avec succès" })
+  async function markDone(task: RxDocument<TaskDoc>): Promise<void> {
+    await updateTask({
+      ...task.toJSON(),
+      done: true,
+      doneAt: new Date().toISOString(),
+    })
   }
 
   return (
     <div className="flex flex-col gap-4 p-2">
       <h1 className="mt-2 text-center text-xl font-medium">
-        Welcome to the best todo-list ever created
+       Henri - POC
       </h1>
       <BaseForm form={form}>
         <FieldGroup className="flex-row justify-between gap-2">
           <form.Field name="name">
-            {(field) => <TextField field={field} label="Todo" required />}
+            {(field) => <TextField field={field} label="Tâche" required />}
           </form.Field>
           <Button type="submit" variant="ghost" className="self-end">
             <PlusCircleIcon className="size-8" color="var(--primary)" />
@@ -69,15 +73,14 @@ export default function Home() {
           ? tasks.map((task) => (
               <div
                 key={task.id}
-                className="flex items-center justify-between gap-2 pb-2 not-last:border-b"
+                className="flex items-center justify-between gap-2 px-2 pb-2 not-last:border-b"
               >
                 <Link to={"/task/" + task.id} className="w-full">
                   {task.name}
                 </Link>
-                <TrashIcon
-                  size={24}
-                  color="var(--destructive)"
-                  onClick={() => removeTask(task.id)}
+                <Checkbox
+                  checked={task.done}
+                  onCheckedChange={() => markDone(task)}
                 />
               </div>
             ))

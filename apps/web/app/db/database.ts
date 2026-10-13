@@ -82,6 +82,13 @@ async function createDatabase(): Promise<RxDatabase> {
           delete oldDoc.image
           return oldDoc
         },
+        4: function (oldDoc) {
+          oldDoc.scheduledAt = oldDoc.date
+          delete oldDoc.date
+          oldDoc.done = false
+          oldDoc.doneAt = null
+          return oldDoc
+        },
       },
     },
     upload: {

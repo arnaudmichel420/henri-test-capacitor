@@ -6,12 +6,18 @@ export const taskCreateSchema = z.object({
 
 export const taskSchema = taskCreateSchema.extend({
   id: z.uuidv7(),
-  date: z.date().optional(),
+  scheduledAt: z.date().optional(),
+  done: z.boolean().default(false),
+  doneAt: z.date().optional(),
 })
 
 export const taskUpdateSchema = taskSchema
   .omit({ id: true })
-  .transform((value) => ({ ...value, date: value?.date?.toISOString() }))
+  .transform((value) => ({
+    ...value,
+    scheduledAt: value?.scheduledAt?.toISOString(),
+    doneAt: value?.doneAt?.toISOString(),
+  }))
 
 export type Task = z.infer<typeof taskSchema>
 export type Tasks = Task[]
