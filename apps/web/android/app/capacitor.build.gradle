@@ -16,6 +16,7 @@ dependencies {
     implementation project(':capacitor-geolocation')
     implementation project(':capacitor-google-maps')
     implementation project(':capacitor-toast')
+    implementation project(':capawesome-team-capacitor-datetime-picker')
 
 }
 

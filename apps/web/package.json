@@ -21,6 +21,7 @@
     "@capacitor/google-maps": "^8.0.1",
     "@capacitor/ios": "^8.5.0",
     "@capacitor/toast": "^8.0.1",
+    "@capawesome-team/capacitor-datetime-picker": "^8.2.0",
     "@ionic/pwa-elements": "^3.4.0",
     "@phosphor-icons/react": "^2.1.10",
     "@react-router/node": "7.15.1",

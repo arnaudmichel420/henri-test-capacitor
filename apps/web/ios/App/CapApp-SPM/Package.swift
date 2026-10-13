@@ -18,7 +18,8 @@ let package = Package(
         .package(name: "CapacitorFilesystem", path: "../../../../../node_modules/.pnpm/@capacitor+filesystem@8.1.3_@capacitor+core@8.5.0/node_modules/@capacitor/filesystem"),
         .package(name: "CapacitorGeolocation", path: "../../../../../node_modules/.pnpm/@capacitor+geolocation@8.2.0_@capacitor+core@8.5.0/node_modules/@capacitor/geolocation"),
         .package(name: "CapacitorGoogleMaps", path: "../../../../../node_modules/.pnpm/@capacitor+google-maps@8.0.1_@capacitor+core@8.5.0/node_modules/@capacitor/google-maps"),
-        .package(name: "CapacitorToast", path: "../../../../../node_modules/.pnpm/@capacitor+toast@8.0.1_@capacitor+core@8.5.0/node_modules/@capacitor/toast")
+        .package(name: "CapacitorToast", path: "../../../../../node_modules/.pnpm/@capacitor+toast@8.0.1_@capacitor+core@8.5.0/node_modules/@capacitor/toast"),
+        .package(name: "CapawesomeTeamCapacitorDatetimePicker", path: "../../../../../node_modules/.pnpm/@capawesome-team+capacitor-datetime-picker@8.2.0_@capacitor+core@8.5.0/node_modules/@capawesome-team/capacitor-datetime-picker")
     ],
     targets: [
         .target(
@@ -32,7 +33,8 @@ let package = Package(
                 .product(name: "CapacitorFilesystem", package: "CapacitorFilesystem"),
                 .product(name: "CapacitorGeolocation", package: "CapacitorGeolocation"),
                 .product(name: "CapacitorGoogleMaps", package: "CapacitorGoogleMaps"),
-                .product(name: "CapacitorToast", package: "CapacitorToast")
+                .product(name: "CapacitorToast", package: "CapacitorToast"),
+                .product(name: "CapawesomeTeamCapacitorDatetimePicker", package: "CapawesomeTeamCapacitorDatetimePicker")
             ]
         )
     ]

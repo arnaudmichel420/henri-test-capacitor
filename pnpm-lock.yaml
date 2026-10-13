@@ -53,6 +53,9 @@ importers:
       '@capacitor/toast':
         specifier: ^8.0.1
         version: 8.0.1(@capacitor/core@8.5.0)
+      '@capawesome-team/capacitor-datetime-picker':
+        specifier: ^8.2.0
+        version: 8.2.0(@capacitor/core@8.5.0)
       '@ionic/pwa-elements':
         specifier: ^3.4.0
         version: 3.4.0
@@ -431,6 +434,11 @@ packages:
 
   '@capacitor/toast@8.0.1':
     resolution: {integrity: sha512-0uoyftoAeFjtOMiozBo7YXEo+zcpQCAxtBONSvrljJ05SKdlb1A8OFHaV/DZfIpGt+19kzUGaEaUemLdll4wUw==}
+    peerDependencies:
+      '@capacitor/core': '>=8.0.0'
+
+  '@capawesome-team/capacitor-datetime-picker@8.2.0':
+    resolution: {integrity: sha512-2Y6xup5sRX4PUfrfDF4LZXC3KYjzMQTfm7BqL/Xa9uC1b0QYBcD5zJeoGfoWDNOTHvCnWNdfW1CScEUzHsdaQA==}
     peerDependencies:
       '@capacitor/core': '>=8.0.0'
 
@@ -4706,6 +4714,10 @@ snapshots:
   '@capacitor/synapse@1.0.4': {}
 
   '@capacitor/toast@8.0.1(@capacitor/core@8.5.0)':
+    dependencies:
+      '@capacitor/core': 8.5.0
+
+  '@capawesome-team/capacitor-datetime-picker@8.2.0(@capacitor/core@8.5.0)':
     dependencies:
       '@capacitor/core': 8.5.0
 
