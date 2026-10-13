@@ -141,12 +141,15 @@ importers:
       '@base-ui/react':
         specifier: ^1.7.0
         version: 1.7.0(@date-fns/tz@1.5.0)(@types/react@19.2.15)(date-fns@4.4.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@fontsource-variable/jetbrains-mono':
+      '@fontsource-variable/cormorant':
         specifier: ^5.3.0
         version: 5.3.0
-      '@fontsource-variable/outfit':
-        specifier: ^5.2.8
-        version: 5.2.8
+      '@fontsource-variable/jost':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/birthstone-bounce':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@phosphor-icons/react':
         specifier: ^2.1.10
         version: 2.1.10(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -795,11 +798,14 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@fontsource-variable/jetbrains-mono@5.3.0':
-    resolution: {integrity: sha512-F32xpS2NsGYoQi2ADSkKTgpJj7ozajsGgDJ8woTnqjmIB+dxDIqImjl4pXZVEExu8UFZ2ndhmX18EBS/hdz3Lw==}
+  '@fontsource-variable/cormorant@5.3.0':
+    resolution: {integrity: sha512-S3/jFZ2+Erx8ML5+lo71rYKqVpJF13CZ3yWX7xfjQk1wFcPhT9Gp+l2tnNSLOx5Mzjn3mQmVPutpvx91O2VqpQ==}
 
-  '@fontsource-variable/outfit@5.2.8':
-    resolution: {integrity: sha512-4oUDCZx/Tcz6HZP423w/niqEH31Gks5IsqHV2ZZz1qKHaVIZdj2f0/S1IK2n8jl6Xo0o3N+3RjNHlV9R73ozQA==}
+  '@fontsource-variable/jost@5.3.0':
+    resolution: {integrity: sha512-9FS8iBMJnfyPqQOi9dfMjSwYBIWd0kBD3/jl8VvtbIMY2pK+CSp3oAaTLS1V60rDoM7AfyPvuT+IUfJfGeCTKg==}
+
+  '@fontsource/birthstone-bounce@5.3.0':
+    resolution: {integrity: sha512-DWJc8DWsge7yq6ir80ZSmEdTJglNzYCiSQ1GMkTJHe+OKgSJ9lE2pPRpkmirgIXmbiH6vlenRCwCs32G+wWY5A==}
 
   '@googlemaps/js-api-loader@2.1.1':
     resolution: {integrity: sha512-yUpAwksbHrlZIWD49JmveNSfBG4oAK0AwMknfSaPMnP5N7UT8oFRVCqwjGb1XQovi//7KLbPQKZpbofiLGzpDw==}
@@ -4929,9 +4935,11 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@fontsource-variable/jetbrains-mono@5.3.0': {}
+  '@fontsource-variable/cormorant@5.3.0': {}
 
-  '@fontsource-variable/outfit@5.2.8': {}
+  '@fontsource-variable/jost@5.3.0': {}
+
+  '@fontsource/birthstone-bounce@5.3.0': {}
 
   '@googlemaps/js-api-loader@2.1.1':
     dependencies:

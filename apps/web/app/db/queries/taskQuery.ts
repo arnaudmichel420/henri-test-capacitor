@@ -27,6 +27,13 @@ export async function getTask(id: string): Promise<RxDocument<TaskDoc> | null> {
   return await db.task.findOne(id).exec()
 }
 
+export async function getTask$(
+  id: string,
+): Promise<Observable<RxDocument<TaskDoc> | null>> {
+  const db = await getDatabase()
+  return db.task.findOne(id).$
+}
+
 export async function getTasks(): Promise<Observable<RxDocument<TaskDoc>[]>> {
   return getDatabase().then((db) => db.task.find().$)
 }
@@ -44,6 +51,14 @@ export async function updateTask({
     scheduledAt: scheduledAt ?? null,
     done,
     doneAt: doneAt ?? null,
+  })
+}
+
+export async function setTaskDone(task: RxDocument<TaskDoc>, done: boolean) {
+  await updateTask({
+    ...task.toJSON(),
+    done,
+    doneAt: done ? new Date().toISOString() : null,
   })
 }
 

@@ -128,10 +128,11 @@ export default function TaskEdit() {
         </Link>
       </div>
 
-      <div className="p-2">
+      <div className="p-4">
         {task ? (
-          <BaseForm form={form}>
-            <FieldGroup>
+          <BaseForm form={form} className="gap-6">
+            <h1 className="font-serif text-3xl">Modifier la tâche</h1>
+            <FieldGroup className="gap-4">
               <form.Field name="name">
                 {(field) => <TextField field={field} label="Nom" required />}
               </form.Field>
@@ -145,16 +146,27 @@ export default function TaskEdit() {
               </form.Field>
             </FieldGroup>
             <div className="flex items-center justify-center gap-2">
-              <Button type="button" variant="destructive" onClick={handleDelete}>
+              <Button
+                type="button"
+                variant="destructive"
+                className="flex-1"
+                onClick={handleDelete}
+              >
                 Supprimer
               </Button>
-              <Button disabled={isSaving} type="submit">
+              <Button
+                disabled={isSaving}
+                type="submit"
+                className="flex-1"
+              >
                 Modifier la tache
               </Button>
             </div>
           </BaseForm>
         ) : (
-          <div className="text-2xl">Tache introuvable</div>
+          <div className="flex h-[60vh] w-full items-center justify-center">
+            <Spinner className="size-10" />
+          </div>
         )}
       </div>
     </div>

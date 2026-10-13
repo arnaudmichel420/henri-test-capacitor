@@ -1,8 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/outfit";
-@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource-variable/jost";
+@import "@fontsource-variable/cormorant";
+@import "@fontsource/birthstone-bounce";
 
 @custom-variant dark (&:is(.dark *));
 @source "../../../apps/**/*.{ts,tsx}";
@@ -11,13 +12,13 @@
 
 :root {
   --background: hsl(48 33.3333% 97.0588%);
-  --foreground: hsl(48 19.6078% 20%);
+  --foreground: hsl(0 0% 27.8431%);
   --card: hsl(48 33.3333% 97.0588%);
   --card-foreground: hsl(60 2.5641% 7.6471%);
   --popover: hsl(0 0% 100%);
   --popover-foreground: hsl(50.7692 19.403% 13.1373%);
-  --primary: hsl(15.1111 55.5556% 52.3529%);
-  --primary-foreground: hsl(0 0% 100%);
+  --primary: hsl(39 37.0399% 57.6471%);
+  --primary-foreground: hsl(0 0% 0%);
   --secondary: hsl(46.1538 22.807% 88.8235%);
   --secondary-foreground: hsl(50.7692 8.4967% 30%);
   --muted: hsl(44 29.4118% 90%);
@@ -28,25 +29,23 @@
   --destructive-foreground: hsl(0 0% 100%);
   --border: hsl(50 7.5% 84.3137%);
   --input: hsl(50.7692 7.9755% 68.0392%);
-  --ring: hsl(15.1111 55.5556% 52.3529%);
-  --chart-1: hsl(18.2813 57.1429% 43.9216%);
-  --chart-2: hsl(251.4545 84.6154% 74.5098%);
-  --chart-3: hsl(46.1538 28.2609% 81.9608%);
-  --chart-4: hsl(256.5517 49.1525% 88.4314%);
-  --chart-5: hsl(17.7778 60% 44.1176%);
+  --ring: hsl(39 37.0399% 57.6471%);
+  --chart-1: hsl(41.1364 65.4255% 47.6471%);
+  --chart-2: hsl(208.8372 60.3604% 42.5490%);
+  --chart-3: hsl(136.1538 39.0244% 39.2157%);
+  --chart-4: hsl(330.3509 41.1215% 38.6275%);
+  --chart-5: hsl(13.8707 61.5183% 46.8627%);
   --sidebar: hsl(51.4286 25.9259% 94.7059%);
   --sidebar-foreground: hsl(60 2.521% 23.3333%);
-  --sidebar-primary: hsl(15.1111 55.5556% 52.3529%);
-  --sidebar-primary-foreground: hsl(0 0% 98.4314%);
+  --sidebar-primary: hsl(39 37.0399% 57.6471%);
+  --sidebar-primary-foreground: hsl(0 0% 0%);
   --sidebar-accent: hsl(46.1538 22.807% 88.8235%);
   --sidebar-accent-foreground: hsl(0 0% 20.3922%);
   --sidebar-border: hsl(0 0% 92.1569%);
   --sidebar-ring: hsl(0 0% 70.9804%);
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: "Jost Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Cormorant Variable", ui-serif, Georgia, serif;
+  --font-script: "Birthstone Bounce", cursive;
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
@@ -80,8 +79,8 @@
   --card-foreground: hsl(48 33.3333% 97.0588%);
   --popover: hsl(60 2.1277% 18.4314%);
   --popover-foreground: hsl(60 5.4545% 89.2157%);
-  --primary: hsl(14.7692 63.1068% 59.6078%);
-  --primary-foreground: hsl(0 0% 100%);
+  --primary: hsl(39 44.4444% 64.7059%);
+  --primary-foreground: hsl(0 0% 0%);
   --secondary: hsl(48 33.3333% 97.0588%);
   --secondary-foreground: hsl(60 2.1277% 18.4314%);
   --muted: hsl(60 3.8462% 10.1961%);
@@ -92,25 +91,23 @@
   --destructive-foreground: hsl(0 0% 100%);
   --border: hsl(60 5.0847% 23.1373%);
   --input: hsl(52.5 5.1282% 30.5882%);
-  --ring: hsl(14.7692 63.1068% 59.6078%);
-  --chart-1: hsl(18.2813 57.1429% 43.9216%);
-  --chart-2: hsl(251.4545 84.6154% 74.5098%);
-  --chart-3: hsl(48 10.6383% 9.2157%);
-  --chart-4: hsl(248.2759 25.2174% 22.549%);
-  --chart-5: hsl(17.7778 60% 44.1176%);
+  --ring: hsl(39 44.4444% 64.7059%);
+  --chart-1: hsl(40.4255 70.7692% 41.5686%);
+  --chart-2: hsl(208.8372 60.3604% 42.5490%);
+  --chart-3: hsl(136.1538 39.0244% 39.2157%);
+  --chart-4: hsl(322.9688 40.5108% 45.4902%);
+  --chart-5: hsl(20.6061 63.9175% 50%);
   --sidebar: hsl(30 3.3333% 11.7647%);
   --sidebar-foreground: hsl(46.1538 9.7744% 73.9216%);
-  --sidebar-primary: hsl(0 0% 20.3922%);
-  --sidebar-primary-foreground: hsl(0 0% 98.4314%);
+  --sidebar-primary: hsl(39 44.4444% 64.7059%);
+  --sidebar-primary-foreground: hsl(0 0% 0%);
   --sidebar-accent: hsl(60 3.4483% 5.6863%);
   --sidebar-accent-foreground: hsl(46.1538 9.7744% 73.9216%);
   --sidebar-border: hsl(0 0% 92.1569%);
   --sidebar-ring: hsl(0 0% 70.9804%);
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: "Jost Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Cormorant Variable", ui-serif, Georgia, serif;
+  --font-script: "Birthstone Bounce", cursive;
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
@@ -172,6 +169,7 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
+  --font-script: var(--font-script);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
