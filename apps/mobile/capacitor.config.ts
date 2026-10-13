@@ -2,12 +2,12 @@ import type { CapacitorConfig } from "@capacitor/cli"
 
 const config: CapacitorConfig = {
   appId: "com.capacitortest563728thab.app",
-  appName: "Dumbledoor Studio POC",
+  appName: "Henri POC",
   webDir: "build/client",
-  server: {
-    url: "https://192.168.1.16:8100",
-    // cleartext: true
-  },
+  // server: {
+  //   url: "https://192.168.1.16:8100",
+  //   // cleartext: true
+  // },
   plugins: {
     CapacitorSQLite: {
       iosDatabaseLocation: "Library/CapacitorDatabase",
