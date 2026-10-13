@@ -31,8 +31,8 @@ export default function Home() {
     },
     onSubmit: async ({ value }) => {
       await createTask({ name: value.name })
-      await Toast.show({ text: "Tâche ajoutée avec succès" })
       form.reset()
+      await Toast.show({ text: "Tâche ajoutée avec succès" })
     },
   })
 
@@ -60,7 +60,7 @@ export default function Home() {
           </Button>
         </FieldGroup>
       </BaseForm>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 pb-16">
         {tasks?.length > 0
           ? tasks.map((task) => {
               const status = getTaskStatus(task)
